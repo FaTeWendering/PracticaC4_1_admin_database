@@ -1,0 +1,17 @@
+# Entornos virtuales (en cualquier subcarpeta)
+**/venv/
+**/.venv/
+env/
+.env
+
+# Archivos compilados de Python
+**/__pycache__/
+*.pyc
+
+# Archivos de configuración de IDEs
+.idea/
+.vscode/
+
+# Archivos temporales
+*.log
+*.tmp
