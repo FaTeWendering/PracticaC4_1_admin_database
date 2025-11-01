@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(634, 426)
+        Dialog.resize(859, 609)
         self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setSpacing(0)
@@ -39,6 +39,20 @@ class Ui_Dialog(object):
 "color:rgb(20, 200, 220)")
         self.label.setObjectName("label")
         self.horizontalLayout.addWidget(self.label)
+        self.btn_toggle_menu = QtWidgets.QPushButton(parent=self.frame_2)
+        self.btn_toggle_menu.setStyleSheet("QPushButton{\n"
+"font: 87 12pt \"Arial Black\";\n"
+"background-color:#000000ff;\n"
+"color: rgb(20, 200, 220);\n"
+"border-radius:5px;\n"
+"border: 1px solid white;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: white;\n"
+"}")
+        self.btn_toggle_menu.setObjectName("btn_toggle_menu")
+        self.horizontalLayout.addWidget(self.btn_toggle_menu)
         spacerItem = QtWidgets.QSpacerItem(206, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.btn_minimizar = QtWidgets.QPushButton(parent=self.frame_2)
@@ -100,29 +114,54 @@ class Ui_Dialog(object):
         self.frame_4.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.frame_4.setObjectName("frame_4")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.frame_4)
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.lbl_bienvenida = QtWidgets.QLabel(parent=self.frame_4)
-        self.lbl_bienvenida.setStyleSheet("color: rgb(8, 209, 254);")
+        self.frame_7 = QtWidgets.QFrame(parent=self.frame_4)
+        self.frame_7.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_7.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_7.setObjectName("frame_7")
+        self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.frame_7)
+        self.verticalLayout_9.setObjectName("verticalLayout_9")
+        self.lbl_bienvenida = QtWidgets.QLabel(parent=self.frame_7)
+        self.lbl_bienvenida.setStyleSheet("font: 87 12pt \"Arial Black\";\n"
+"color: rgb(20, 200, 220);")
         self.lbl_bienvenida.setObjectName("lbl_bienvenida")
-        self.verticalLayout_3.addWidget(self.lbl_bienvenida)
-        self.btn_usuarios = QtWidgets.QPushButton(parent=self.frame_4)
+        self.verticalLayout_9.addWidget(self.lbl_bienvenida)
+        self.verticalLayout_3.addWidget(self.frame_7)
+        self.frame_6 = QtWidgets.QFrame(parent=self.frame_4)
+        self.frame_6.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_6.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_6.setObjectName("frame_6")
+        self.verticalLayout_10 = QtWidgets.QVBoxLayout(self.frame_6)
+        self.verticalLayout_10.setObjectName("verticalLayout_10")
+        self.btn_usuarios = QtWidgets.QPushButton(parent=self.frame_6)
         self.btn_usuarios.setObjectName("btn_usuarios")
-        self.verticalLayout_3.addWidget(self.btn_usuarios)
-        self.btn_Personas = QtWidgets.QPushButton(parent=self.frame_4)
+        self.verticalLayout_10.addWidget(self.btn_usuarios)
+        self.btn_Personas = QtWidgets.QPushButton(parent=self.frame_6)
         self.btn_Personas.setObjectName("btn_Personas")
-        self.verticalLayout_3.addWidget(self.btn_Personas)
-        self.btn_productos = QtWidgets.QPushButton(parent=self.frame_4)
+        self.verticalLayout_10.addWidget(self.btn_Personas)
+        self.btn_productos = QtWidgets.QPushButton(parent=self.frame_6)
         self.btn_productos.setObjectName("btn_productos")
-        self.verticalLayout_3.addWidget(self.btn_productos)
-        self.pushButton = QtWidgets.QPushButton(parent=self.frame_4)
+        self.verticalLayout_10.addWidget(self.btn_productos)
+        self.pushButton = QtWidgets.QPushButton(parent=self.frame_6)
         self.pushButton.setObjectName("pushButton")
-        self.verticalLayout_3.addWidget(self.pushButton)
-        self.pushButton_2 = QtWidgets.QPushButton(parent=self.frame_4)
+        self.verticalLayout_10.addWidget(self.pushButton)
+        self.pushButton_2 = QtWidgets.QPushButton(parent=self.frame_6)
         self.pushButton_2.setObjectName("pushButton_2")
-        self.verticalLayout_3.addWidget(self.pushButton_2)
-        self.btn_cerrarsesion = QtWidgets.QPushButton(parent=self.frame_4)
+        self.verticalLayout_10.addWidget(self.pushButton_2)
+        self.pushButton_3 = QtWidgets.QPushButton(parent=self.frame_6)
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.verticalLayout_10.addWidget(self.pushButton_3)
+        self.pushButton_4 = QtWidgets.QPushButton(parent=self.frame_6)
+        self.pushButton_4.setObjectName("pushButton_4")
+        self.verticalLayout_10.addWidget(self.pushButton_4)
+        self.btn_cerrarsesion = QtWidgets.QPushButton(parent=self.frame_6)
         self.btn_cerrarsesion.setObjectName("btn_cerrarsesion")
-        self.verticalLayout_3.addWidget(self.btn_cerrarsesion)
+        self.verticalLayout_10.addWidget(self.btn_cerrarsesion)
+        self.verticalLayout_3.addWidget(self.frame_6)
+        self.verticalLayout_3.setStretch(0, 2)
+        self.verticalLayout_3.setStretch(1, 8)
         self.horizontalLayout_2.addWidget(self.frame_4)
         self.frame_5 = QtWidgets.QFrame(parent=self.frame_3)
         self.frame_5.setStyleSheet("QFrame{\n"
@@ -138,17 +177,30 @@ class Ui_Dialog(object):
         self.frame_5.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.frame_5.setObjectName("frame_5")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.frame_5)
+        self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_4.setSpacing(0)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.stackedWidget = QtWidgets.QStackedWidget(parent=self.frame_5)
-        self.stackedWidget.setStyleSheet("background-color:rgb(0, 0, 0)")
+        self.stackedWidget.setStyleSheet("background-color:rgb(53,53,79);\n"
+"QFrame{\n"
+"background-color:rgb(53,53,79);\n"
+"}\n"
+"QPushButton{\n"
+"font: 87 12pt \"Arial Black\";\n"
+"background-color:#000000ff;\n"
+"color: rgb(20, 200, 220);\n"
+"border-radius:5px;\n"
+"border: 1px solid white;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: black;\n"
+"}")
         self.stackedWidget.setObjectName("stackedWidget")
         self.page = QtWidgets.QWidget()
         self.page.setObjectName("page")
         self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.page)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
-        self.label_4 = QtWidgets.QLabel(parent=self.page)
-        self.label_4.setObjectName("label_4")
-        self.verticalLayout_7.addWidget(self.label_4)
         self.stackedWidget.addWidget(self.page)
         self.page_2 = QtWidgets.QWidget()
         self.page_2.setObjectName("page_2")
@@ -174,6 +226,251 @@ class Ui_Dialog(object):
         self.label_5.setObjectName("label_5")
         self.horizontalLayout_3.addWidget(self.label_5)
         self.stackedWidget.addWidget(self.page_4)
+        self.page_5 = QtWidgets.QWidget()
+        self.page_5.setObjectName("page_5")
+        self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.page_5)
+        self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_8.setSpacing(0)
+        self.verticalLayout_8.setObjectName("verticalLayout_8")
+        self.frame_8 = QtWidgets.QFrame(parent=self.page_5)
+        self.frame_8.setStyleSheet("background-color: rgb(0, 0, 0);")
+        self.frame_8.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_8.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_8.setObjectName("frame_8")
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.frame_8)
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.label_4 = QtWidgets.QLabel(parent=self.frame_8)
+        self.label_4.setStyleSheet("font: 87 12pt \"Arial Black\";\n"
+"color:rgb(20, 200, 220)")
+        self.label_4.setObjectName("label_4")
+        self.horizontalLayout_4.addWidget(self.label_4)
+        spacerItem1 = QtWidgets.QSpacerItem(182, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem1)
+        self.label_6 = QtWidgets.QLabel(parent=self.frame_8)
+        self.label_6.setStyleSheet("font:87 12pt \"Arial Black\";\n"
+"color:rgb(20, 200, 220)")
+        self.label_6.setObjectName("label_6")
+        self.horizontalLayout_4.addWidget(self.label_6)
+        self.btn_desplegar_menu_compras = QtWidgets.QPushButton(parent=self.frame_8)
+        self.btn_desplegar_menu_compras.setStyleSheet("QPushButton{\n"
+"font: 87 12pt \"Arial Black\";\n"
+"background-color:#000000ff;\n"
+"color: rgb(20, 200, 220);\n"
+"border-radius:5px;\n"
+"border: 1px solid white;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: white;\n"
+"}")
+        self.btn_desplegar_menu_compras.setObjectName("btn_desplegar_menu_compras")
+        self.horizontalLayout_4.addWidget(self.btn_desplegar_menu_compras)
+        self.verticalLayout_8.addWidget(self.frame_8)
+        self.frame_9 = QtWidgets.QFrame(parent=self.page_5)
+        self.frame_9.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_9.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_9.setObjectName("frame_9")
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.frame_9)
+        self.horizontalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_5.setSpacing(0)
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.frame_11 = QtWidgets.QFrame(parent=self.frame_9)
+        self.frame_11.setStyleSheet("QFrame{\n"
+"background-color:rgb(53,53,79);\n"
+"}\n"
+"QPushButton{\n"
+"font: 87 12pt \"Arial Black\";\n"
+"background-color:#000000ff;\n"
+"color: rgb(20, 200, 220);\n"
+"border-radius:5px;\n"
+"border: 1px solid white;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: black;\n"
+"}")
+        self.frame_11.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_11.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_11.setObjectName("frame_11")
+        self.verticalLayout_12 = QtWidgets.QVBoxLayout(self.frame_11)
+        self.verticalLayout_12.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_12.setSpacing(0)
+        self.verticalLayout_12.setObjectName("verticalLayout_12")
+        self.frame_12 = QtWidgets.QFrame(parent=self.frame_11)
+        self.frame_12.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_12.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_12.setObjectName("frame_12")
+        self.verticalLayout_13 = QtWidgets.QVBoxLayout(self.frame_12)
+        self.verticalLayout_13.setObjectName("verticalLayout_13")
+        self.lbl_user_compra = QtWidgets.QLabel(parent=self.frame_12)
+        self.lbl_user_compra.setObjectName("lbl_user_compra")
+        self.verticalLayout_13.addWidget(self.lbl_user_compra)
+        self.gridLayout = QtWidgets.QGridLayout()
+        self.gridLayout.setObjectName("gridLayout")
+        self.lbl_nom_provee_compra = QtWidgets.QLabel(parent=self.frame_12)
+        self.lbl_nom_provee_compra.setObjectName("lbl_nom_provee_compra")
+        self.gridLayout.addWidget(self.lbl_nom_provee_compra, 0, 0, 1, 1)
+        self.cb_nom_provee_compra = QtWidgets.QComboBox(parent=self.frame_12)
+        self.cb_nom_provee_compra.setStyleSheet("font: 87 12pt \"Arial Black\";\n"
+"background-color:#000000ff;\n"
+"color: rgb(20, 200, 220);\n"
+"border-radius:5px;\n"
+"border: 1px solid white;")
+        self.cb_nom_provee_compra.setObjectName("cb_nom_provee_compra")
+        self.gridLayout.addWidget(self.cb_nom_provee_compra, 0, 1, 1, 1)
+        self.verticalLayout_13.addLayout(self.gridLayout)
+        self.lbl_info_provee_compra = QtWidgets.QLabel(parent=self.frame_12)
+        self.lbl_info_provee_compra.setObjectName("lbl_info_provee_compra")
+        self.verticalLayout_13.addWidget(self.lbl_info_provee_compra)
+        self.gridLayout_2 = QtWidgets.QGridLayout()
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.lbl_producto_compra = QtWidgets.QLabel(parent=self.frame_12)
+        self.lbl_producto_compra.setObjectName("lbl_producto_compra")
+        self.gridLayout_2.addWidget(self.lbl_producto_compra, 0, 0, 1, 1)
+        self.cb_producto_compra = QtWidgets.QComboBox(parent=self.frame_12)
+        self.cb_producto_compra.setStyleSheet("font: 87 12pt \"Arial Black\";\n"
+"background-color:#000000ff;\n"
+"color: rgb(20, 200, 220);\n"
+"border-radius:5px;\n"
+"border: 1px solid white;")
+        self.cb_producto_compra.setObjectName("cb_producto_compra")
+        self.gridLayout_2.addWidget(self.cb_producto_compra, 0, 1, 1, 1)
+        self.verticalLayout_13.addLayout(self.gridLayout_2)
+        self.verticalLayout_12.addWidget(self.frame_12)
+        self.frame_13 = QtWidgets.QFrame(parent=self.frame_11)
+        self.frame_13.setStyleSheet("QComboBox{\n"
+"font: 87 12pt \"Arial Black\";\n"
+"background-color:#000000ff;\n"
+"color: rgb(20, 200, 220);\n"
+"border-radius:5px;\n"
+"border: 1px solid white;\n"
+"}")
+        self.frame_13.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_13.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_13.setObjectName("frame_13")
+        self.verticalLayout_14 = QtWidgets.QVBoxLayout(self.frame_13)
+        self.verticalLayout_14.setObjectName("verticalLayout_14")
+        self.Table_compra = QtWidgets.QTableWidget(parent=self.frame_13)
+        self.Table_compra.setStyleSheet("font: 87 12pt \"Arial Black\";\n"
+"background-color:#000000ff;\n"
+"color: rgb(20, 200, 220);\n"
+"border-radius:5px;\n"
+"border: 1px solid white;")
+        self.Table_compra.setColumnCount(4)
+        self.Table_compra.setObjectName("Table_compra")
+        self.Table_compra.setRowCount(0)
+        item = QtWidgets.QTableWidgetItem()
+        self.Table_compra.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.Table_compra.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.Table_compra.setHorizontalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.Table_compra.setHorizontalHeaderItem(3, item)
+        self.verticalLayout_14.addWidget(self.Table_compra)
+        self.gridLayout_3 = QtWidgets.QGridLayout()
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.label_11 = QtWidgets.QLabel(parent=self.frame_13)
+        self.label_11.setObjectName("label_11")
+        self.gridLayout_3.addWidget(self.label_11, 0, 0, 1, 1)
+        self.label_12 = QtWidgets.QLabel(parent=self.frame_13)
+        self.label_12.setObjectName("label_12")
+        self.gridLayout_3.addWidget(self.label_12, 1, 0, 1, 1)
+        self.label_13 = QtWidgets.QLabel(parent=self.frame_13)
+        self.label_13.setObjectName("label_13")
+        self.gridLayout_3.addWidget(self.label_13, 2, 0, 1, 1)
+        self.lbl_subtotal_compras = QtWidgets.QLabel(parent=self.frame_13)
+        self.lbl_subtotal_compras.setText("")
+        self.lbl_subtotal_compras.setObjectName("lbl_subtotal_compras")
+        self.gridLayout_3.addWidget(self.lbl_subtotal_compras, 0, 1, 1, 1)
+        self.lbl_iva_compras = QtWidgets.QLabel(parent=self.frame_13)
+        self.lbl_iva_compras.setText("")
+        self.lbl_iva_compras.setObjectName("lbl_iva_compras")
+        self.gridLayout_3.addWidget(self.lbl_iva_compras, 1, 1, 1, 1)
+        self.lbl_total_compras = QtWidgets.QLabel(parent=self.frame_13)
+        self.lbl_total_compras.setText("")
+        self.lbl_total_compras.setObjectName("lbl_total_compras")
+        self.gridLayout_3.addWidget(self.lbl_total_compras, 2, 1, 1, 1)
+        self.verticalLayout_14.addLayout(self.gridLayout_3)
+        self.gridLayout_4 = QtWidgets.QGridLayout()
+        self.gridLayout_4.setObjectName("gridLayout_4")
+        self.label_16 = QtWidgets.QLabel(parent=self.frame_13)
+        self.label_16.setObjectName("label_16")
+        self.gridLayout_4.addWidget(self.label_16, 0, 0, 1, 1)
+        self.cb_Fm_pago_compras = QtWidgets.QComboBox(parent=self.frame_13)
+        self.cb_Fm_pago_compras.setObjectName("cb_Fm_pago_compras")
+        self.gridLayout_4.addWidget(self.cb_Fm_pago_compras, 0, 1, 1, 1)
+        self.label_18 = QtWidgets.QLabel(parent=self.frame_13)
+        self.label_18.setObjectName("label_18")
+        self.gridLayout_4.addWidget(self.label_18, 0, 2, 1, 1)
+        self.cb_metpago_compras = QtWidgets.QComboBox(parent=self.frame_13)
+        self.cb_metpago_compras.setObjectName("cb_metpago_compras")
+        self.gridLayout_4.addWidget(self.cb_metpago_compras, 0, 3, 1, 1)
+        self.label_17 = QtWidgets.QLabel(parent=self.frame_13)
+        self.label_17.setObjectName("label_17")
+        self.gridLayout_4.addWidget(self.label_17, 1, 0, 1, 1)
+        self.txt_anticipo_compras = QtWidgets.QLineEdit(parent=self.frame_13)
+        self.txt_anticipo_compras.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.txt_anticipo_compras.setObjectName("txt_anticipo_compras")
+        self.gridLayout_4.addWidget(self.txt_anticipo_compras, 1, 1, 1, 1)
+        self.label_19 = QtWidgets.QLabel(parent=self.frame_13)
+        self.label_19.setObjectName("label_19")
+        self.gridLayout_4.addWidget(self.label_19, 1, 2, 1, 1)
+        self.txt_anticipo_compras_2 = QtWidgets.QLineEdit(parent=self.frame_13)
+        self.txt_anticipo_compras_2.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.txt_anticipo_compras_2.setText("")
+        self.txt_anticipo_compras_2.setObjectName("txt_anticipo_compras_2")
+        self.gridLayout_4.addWidget(self.txt_anticipo_compras_2, 1, 3, 1, 1)
+        self.verticalLayout_14.addLayout(self.gridLayout_4)
+        self.verticalLayout_12.addWidget(self.frame_13)
+        self.verticalLayout_12.setStretch(0, 4)
+        self.verticalLayout_12.setStretch(1, 8)
+        self.horizontalLayout_5.addWidget(self.frame_11)
+        self.frame_10 = QtWidgets.QFrame(parent=self.frame_9)
+        self.frame_10.setStyleSheet("QFrame{\n"
+"background-color:rgb(53,53,79);\n"
+"}\n"
+"QPushButton{\n"
+"font: 87 12pt \"Arial Black\";\n"
+"background-color:#000000ff;\n"
+"color: rgb(20, 200, 220);\n"
+"border-radius:5px;\n"
+"border: 1px solid white;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: black;\n"
+"}")
+        self.frame_10.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_10.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_10.setObjectName("frame_10")
+        self.verticalLayout_11 = QtWidgets.QVBoxLayout(self.frame_10)
+        self.verticalLayout_11.setObjectName("verticalLayout_11")
+        self.btn_nuevo_compras = QtWidgets.QPushButton(parent=self.frame_10)
+        self.btn_nuevo_compras.setObjectName("btn_nuevo_compras")
+        self.verticalLayout_11.addWidget(self.btn_nuevo_compras)
+        self.btn_borrar_compras = QtWidgets.QPushButton(parent=self.frame_10)
+        self.btn_borrar_compras.setObjectName("btn_borrar_compras")
+        self.verticalLayout_11.addWidget(self.btn_borrar_compras)
+        self.btn_actualizar_compras = QtWidgets.QPushButton(parent=self.frame_10)
+        self.btn_actualizar_compras.setObjectName("btn_actualizar_compras")
+        self.verticalLayout_11.addWidget(self.btn_actualizar_compras)
+        self.btn_consulta_compras = QtWidgets.QPushButton(parent=self.frame_10)
+        self.btn_consulta_compras.setObjectName("btn_consulta_compras")
+        self.verticalLayout_11.addWidget(self.btn_consulta_compras)
+        self.btn_cancelar_compras = QtWidgets.QPushButton(parent=self.frame_10)
+        self.btn_cancelar_compras.setObjectName("btn_cancelar_compras")
+        self.verticalLayout_11.addWidget(self.btn_cancelar_compras)
+        self.btn_regresar_compras = QtWidgets.QPushButton(parent=self.frame_10)
+        self.btn_regresar_compras.setObjectName("btn_regresar_compras")
+        self.verticalLayout_11.addWidget(self.btn_regresar_compras)
+        self.horizontalLayout_5.addWidget(self.frame_10)
+        self.horizontalLayout_5.setStretch(0, 8)
+        self.horizontalLayout_5.setStretch(1, 4)
+        self.verticalLayout_8.addWidget(self.frame_9)
+        self.verticalLayout_8.setStretch(0, 1)
+        self.verticalLayout_8.setStretch(1, 8)
+        self.stackedWidget.addWidget(self.page_5)
         self.verticalLayout_4.addWidget(self.stackedWidget)
         self.horizontalLayout_2.addWidget(self.frame_5)
         self.horizontalLayout_2.setStretch(0, 4)
@@ -189,18 +486,48 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.label.setText(_translate("Dialog", "Control de creditos"))
+        self.label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:16pt; font-weight:600;\">Menu de opciones</span></p></body></html>"))
+        self.btn_toggle_menu.setText(_translate("Dialog", "<"))
         self.lbl_bienvenida.setText(_translate("Dialog", "Bienvenido(a):"))
-        self.btn_usuarios.setText(_translate("Dialog", "Usuarios"))
+        self.btn_usuarios.setText(_translate("Dialog", "Catalogos"))
         self.btn_Personas.setText(_translate("Dialog", "Personas"))
-        self.btn_productos.setText(_translate("Dialog", "Pago"))
-        self.pushButton.setText(_translate("Dialog", "Calificaciones"))
-        self.pushButton_2.setText(_translate("Dialog", "Asistencias"))
+        self.btn_productos.setText(_translate("Dialog", "Pedido"))
+        self.pushButton.setText(_translate("Dialog", "RecepPed"))
+        self.pushButton_2.setText(_translate("Dialog", "Compra"))
+        self.pushButton_3.setText(_translate("Dialog", "Venta"))
+        self.pushButton_4.setText(_translate("Dialog", "CambiarPass"))
         self.btn_cerrarsesion.setText(_translate("Dialog", "Cerrar sesion"))
-        self.label_4.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:20pt;\">Usuarios</span></p></body></html>"))
         self.label_3.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:26pt;\">Personas</span></p></body></html>"))
         self.label_2.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:20pt;\">Pago</span></p><p align=\"center\"><br/></p></body></html>"))
         self.label_5.setText(_translate("Dialog", "TextLabel"))
+        self.label_4.setText(_translate("Dialog", "Control de compras"))
+        self.label_6.setText(_translate("Dialog", "Menu de opciones"))
+        self.btn_desplegar_menu_compras.setText(_translate("Dialog", ">"))
+        self.lbl_user_compra.setText(_translate("Dialog", "User:"))
+        self.lbl_nom_provee_compra.setText(_translate("Dialog", "Nombre del proveedor:"))
+        self.lbl_info_provee_compra.setText(_translate("Dialog", "Informacion del proveedor"))
+        self.lbl_producto_compra.setText(_translate("Dialog", "Producto:"))
+        item = self.Table_compra.horizontalHeaderItem(0)
+        item.setText(_translate("Dialog", "Cant"))
+        item = self.Table_compra.horizontalHeaderItem(1)
+        item.setText(_translate("Dialog", "Descripción"))
+        item = self.Table_compra.horizontalHeaderItem(2)
+        item.setText(_translate("Dialog", "Precio"))
+        item = self.Table_compra.horizontalHeaderItem(3)
+        item.setText(_translate("Dialog", "SubTotal"))
+        self.label_11.setText(_translate("Dialog", "Subtotal"))
+        self.label_12.setText(_translate("Dialog", "Iva"))
+        self.label_13.setText(_translate("Dialog", "Total"))
+        self.label_16.setText(_translate("Dialog", "FmPago"))
+        self.label_18.setText(_translate("Dialog", "MetPago"))
+        self.label_17.setText(_translate("Dialog", "Anticipo"))
+        self.label_19.setText(_translate("Dialog", "Anticipo"))
+        self.btn_nuevo_compras.setText(_translate("Dialog", "Nuevo"))
+        self.btn_borrar_compras.setText(_translate("Dialog", "Borrar"))
+        self.btn_actualizar_compras.setText(_translate("Dialog", "Actualizar"))
+        self.btn_consulta_compras.setText(_translate("Dialog", "Consulta"))
+        self.btn_cancelar_compras.setText(_translate("Dialog", "Cancelar"))
+        self.btn_regresar_compras.setText(_translate("Dialog", "Regresar"))
 
 
 if __name__ == "__main__":

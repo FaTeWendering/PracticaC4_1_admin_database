@@ -97,3 +97,30 @@ class DatabaseManager:
         finally:
             cursor.close()
 
+    def registrar_acceso(self, usuario_intento, exito, detalle_evento):
+        if not self.connection or not self.connection.is_connected():
+            print("Error no hay conexion en la base de datos para la bitacora.")
+            return False
+
+        cursor = self.connection.cursor()
+
+        query = """
+        INSERT INTO bitacora_accesos
+            (usuario_intento, fecha_hora, exito, detalle_evento)
+        VALUES
+            (%s, NOW(), %s, %s);"""
+
+        try:
+            datos = (usuario_intento, exito, detalle_evento)
+            cursor.execute(query, datos)
+
+            self.connection.commit()
+            print(f"Registro en la bitacora guardado: {usuario_intento}, {detalle_evento}")
+            return True
+        except Error as e:
+            print(f"Error en mostrar en bitacora: {e}")
+            self.connection.rollback()
+            return False
+        finally:
+            cursor.close()
+
