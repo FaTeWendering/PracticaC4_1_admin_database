@@ -38,7 +38,8 @@ class DatabaseManager:
                 n.DsNombre, 
                 ap.DsApellid, 
                 am.DsApellid,
-                p.DsPuesto
+                p.DsPuesto,
+                g.DsGenero
             FROM
                 mUsuario u
             JOIN mDtsPerson dp ON u.CvPerson = dp.CvPerson
@@ -46,6 +47,7 @@ class DatabaseManager:
             JOIN cApellid ap ON dp.CvApePat = ap.CvApellid
             JOIN cApellid am ON dp.CvApeMat = am.CvApellid
             LEFT JOIN cPuesto p ON dp.CvPuesto = p.CvPuesto
+            LEFT JOIN cGenero g ON dp.CvGenero = g.CvGenero
             WHERE
                 u.Login = %s AND u.Password = %s;
         """
@@ -64,7 +66,6 @@ class DatabaseManager:
             return None
         finally:
             cursor.close()
-            self.connection.commit()
 
     def actualizar_estado_cuenta(self, cv_user, nuevo_estado):
         if not self.connection or not self.connection.is_connected():

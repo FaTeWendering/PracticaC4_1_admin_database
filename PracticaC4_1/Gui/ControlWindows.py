@@ -57,9 +57,17 @@ class ControlWindows(QDialog):
             self.dragging = False
             self.offset = None
 
-    def set_user_info(self, nombre_completo, puesto):
-        """Actualiza el QLabel de bienvenida con el nombre y puesto."""
-        texto_bienvenida = f"Bienvenido(a):\n{nombre_completo}\n({puesto})"
+    def set_user_info(self, nombre_completo, puesto, genero):
+        """Actualiza el QLabel de bienvenida con el nombre, puesto y género."""
+
+        # Lógica para determinar el saludo
+        saludo = "Bienvenido(a)"  # Saludo por defecto
+        if genero.lower() == 'masculino':
+            saludo = "Bienvenido"
+        elif genero.lower() == 'femenino':
+            saludo = "Bienvenida"
+
+        texto_bienvenida = f"{saludo}:\n{nombre_completo}\n({puesto})"
         self.ui.lbl_bienvenida.setText(texto_bienvenida)
 
     def cerrar_sesion(self):

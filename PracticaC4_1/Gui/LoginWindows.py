@@ -6,7 +6,7 @@ from .ui_LoginWindows import Ui_Dialog
 
 
 class LoginWindow(QWidget):
-    login_exitoso = pyqtSignal(str, str)
+    login_exitoso = pyqtSignal(str, str, str)
     def __init__(self, db_manager):
         super().__init__()
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
@@ -92,7 +92,7 @@ class LoginWindow(QWidget):
 
         try:
             (cv_user, edocta_str, fecini_str, fecven_str,
-             nombre, ape_pat, ape_mat, puesto) = db_data
+             nombre, ape_pat, ape_mat, puesto, genero) = db_data
 
             fecini = datetime.strptime(fecini_str, '%Y-%m-%d').date()
             fecven = datetime.strptime(fecven_str, '%Y-%m-%d').date()
@@ -133,6 +133,7 @@ class LoginWindow(QWidget):
             return
         nombre_completo = f"{nombre} {ape_pat} {ape_mat}"
         puesto_str = puesto if puesto else "N/A" # Manejar si no tiene puesto
+        genero_str = genero if genero else "N/A"
 
-        self.login_exitoso.emit(nombre_completo, puesto_str)
+        self.login_exitoso.emit(nombre_completo, puesto_str, genero_str)
         self.hide()
