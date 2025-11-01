@@ -287,8 +287,10 @@ QPushButton:hover {
                <item>
                 <widget class="QLabel" name="lbl_bienvenida">
                  <property name="styleSheet">
-                  <string notr="true">font: 87 12pt &quot;Arial Black&quot;;
-color: rgb(20, 200, 220);</string>
+                  <string notr="true">font-size: 12pt;
+    color: white; /* Blanco para mejor contraste */
+    background-color: transparent; /* Sin fondo */
+font-family: &quot;Tahoma&quot;, sans-serif;</string>
                  </property>
                  <property name="text">
                   <string>Bienvenido(a):</string>
@@ -308,7 +310,7 @@ color: rgb(20, 200, 220);</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_10">
                <item>
-                <widget class="QPushButton" name="btn_usuarios">
+                <widget class="QPushButton" name="btn_catalogos">
                  <property name="text">
                   <string>Catalogos</string>
                  </property>
@@ -407,20 +409,58 @@ border: 0px solid #14C8DC
             <item>
              <widget class="QStackedWidget" name="stackedWidget">
               <property name="styleSheet">
-               <string notr="true">background-color:rgb(53,53,79);
-QFrame{
-background-color:rgb(53,53,79);
-}
-QPushButton{
-font: 87 12pt &quot;Arial Black&quot;;
-background-color:#000000ff;
-color: rgb(20, 200, 220);
-border-radius:5px;
-border: 1px solid white;
+               <string notr="true">/* --- ESTILO BASE PARA TODAS LAS PÁGINAS --- */
+QStackedWidget &gt; QWidget {
+    background-color: rgb(53, 53, 79); /* Fondo principal (azul oscuro) */
+    font-family: &quot;Tahoma&quot;, sans-serif; /* Fuente base limpia */
 }
 
-QPushButton:hover {
-    background-color: black;
+/* --- TÍTULOS (Ej: &quot;Control de compras&quot;) --- */
+/* Debes asignar esta propiedad en Qt Designer: cssClass = titulo */
+QLabel[cssClass=&quot;titulo&quot;] {
+    font-size: 16pt;
+    font-weight: bold;
+    color: rgb(20, 200, 220); /* Color Cián principal */
+    background-color: transparent; /* Sin fondo */
+}
+
+/* --- ETIQUETAS NORMALES (Ej: &quot;User:&quot;, &quot;Nombre del proveedor:&quot;) --- */
+QLabel {
+    font-size: 12pt;
+    color: white; /* Blanco para mejor contraste */
+    background-color: transparent; /* Sin fondo */
+}
+
+/* --- CAMPOS DE ENTRADA (Texto, Listas, Fechas) --- */
+QLineEdit, QComboBox, QDateEdit {
+    font-size: 10pt;
+    color: white;
+    background-color: #000000ff; /* Fondo negro */
+    border: 1px solid rgb(20, 200, 220); /* Borde Cián */
+    border-radius: 5px;
+    padding: 4px;
+}
+
+QComboBox::drop-down {
+    border: none; /* Quita la flecha fea del combobox */
+}
+
+/* --- TABLA --- */
+QTableWidget {
+    font-size: 10pt;
+    color: white;
+    background-color: #000000ff; /* Fondo negro */
+    gridline-color: rgb(53, 53, 79); /* Líneas de la cuadrícula */
+    border: 1px solid rgb(20, 200, 220); /* Borde Cián */
+}
+
+/* --- ENCABEZADO DE LA TABLA (Cant, Descripción...) --- */
+QHeaderView::section {
+    background-color: rgb(20, 200, 220); /* Fondo Cián */
+    color: black; /* Texto negro para contraste */
+    font-weight: bold;
+    padding: 4px;
+    border: 1px solid rgb(53, 53, 79);
 }</string>
               </property>
               <widget class="QWidget" name="page">
@@ -491,11 +531,16 @@ QPushButton:hover {
                    <item>
                     <widget class="QLabel" name="label_4">
                      <property name="styleSheet">
-                      <string notr="true">font: 87 12pt &quot;Arial Black&quot;;
-color:rgb(20, 200, 220)</string>
+                      <string notr="true">font-size: 16pt;
+    font-weight: bold;
+    color: rgb(20, 200, 220); /* Color Cián principal */
+    background-color: transparent; /* Sin fondo negro */</string>
                      </property>
                      <property name="text">
                       <string>Control de compras</string>
+                     </property>
+                     <property name="cssClass" stdset="0">
+                      <string>titulo</string>
                      </property>
                     </widget>
                    </item>

@@ -124,8 +124,10 @@ class Ui_Dialog(object):
         self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.frame_7)
         self.verticalLayout_9.setObjectName("verticalLayout_9")
         self.lbl_bienvenida = QtWidgets.QLabel(parent=self.frame_7)
-        self.lbl_bienvenida.setStyleSheet("font: 87 12pt \"Arial Black\";\n"
-"color: rgb(20, 200, 220);")
+        self.lbl_bienvenida.setStyleSheet("font-size: 12pt;\n"
+"    color: white; /* Blanco para mejor contraste */\n"
+"    background-color: transparent; /* Sin fondo */\n"
+"font-family: \"Tahoma\", sans-serif;")
         self.lbl_bienvenida.setObjectName("lbl_bienvenida")
         self.verticalLayout_9.addWidget(self.lbl_bienvenida)
         self.verticalLayout_3.addWidget(self.frame_7)
@@ -135,9 +137,9 @@ class Ui_Dialog(object):
         self.frame_6.setObjectName("frame_6")
         self.verticalLayout_10 = QtWidgets.QVBoxLayout(self.frame_6)
         self.verticalLayout_10.setObjectName("verticalLayout_10")
-        self.btn_usuarios = QtWidgets.QPushButton(parent=self.frame_6)
-        self.btn_usuarios.setObjectName("btn_usuarios")
-        self.verticalLayout_10.addWidget(self.btn_usuarios)
+        self.btn_catalogos = QtWidgets.QPushButton(parent=self.frame_6)
+        self.btn_catalogos.setObjectName("btn_catalogos")
+        self.verticalLayout_10.addWidget(self.btn_catalogos)
         self.btn_Personas = QtWidgets.QPushButton(parent=self.frame_6)
         self.btn_Personas.setObjectName("btn_Personas")
         self.verticalLayout_10.addWidget(self.btn_Personas)
@@ -181,20 +183,58 @@ class Ui_Dialog(object):
         self.verticalLayout_4.setSpacing(0)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.stackedWidget = QtWidgets.QStackedWidget(parent=self.frame_5)
-        self.stackedWidget.setStyleSheet("background-color:rgb(53,53,79);\n"
-"QFrame{\n"
-"background-color:rgb(53,53,79);\n"
-"}\n"
-"QPushButton{\n"
-"font: 87 12pt \"Arial Black\";\n"
-"background-color:#000000ff;\n"
-"color: rgb(20, 200, 220);\n"
-"border-radius:5px;\n"
-"border: 1px solid white;\n"
+        self.stackedWidget.setStyleSheet("/* --- ESTILO BASE PARA TODAS LAS PÁGINAS --- */\n"
+"QStackedWidget > QWidget {\n"
+"    background-color: rgb(53, 53, 79); /* Fondo principal (azul oscuro) */\n"
+"    font-family: \"Tahoma\", sans-serif; /* Fuente base limpia */\n"
 "}\n"
 "\n"
-"QPushButton:hover {\n"
-"    background-color: black;\n"
+"/* --- TÍTULOS (Ej: \"Control de compras\") --- */\n"
+"/* Debes asignar esta propiedad en Qt Designer: cssClass = titulo */\n"
+"QLabel[cssClass=\"titulo\"] {\n"
+"    font-size: 16pt;\n"
+"    font-weight: bold;\n"
+"    color: rgb(20, 200, 220); /* Color Cián principal */\n"
+"    background-color: transparent; /* Sin fondo */\n"
+"}\n"
+"\n"
+"/* --- ETIQUETAS NORMALES (Ej: \"User:\", \"Nombre del proveedor:\") --- */\n"
+"QLabel {\n"
+"    font-size: 12pt;\n"
+"    color: white; /* Blanco para mejor contraste */\n"
+"    background-color: transparent; /* Sin fondo */\n"
+"}\n"
+"\n"
+"/* --- CAMPOS DE ENTRADA (Texto, Listas, Fechas) --- */\n"
+"QLineEdit, QComboBox, QDateEdit {\n"
+"    font-size: 10pt;\n"
+"    color: white;\n"
+"    background-color: #000000ff; /* Fondo negro */\n"
+"    border: 1px solid rgb(20, 200, 220); /* Borde Cián */\n"
+"    border-radius: 5px;\n"
+"    padding: 4px;\n"
+"}\n"
+"\n"
+"QComboBox::drop-down {\n"
+"    border: none; /* Quita la flecha fea del combobox */\n"
+"}\n"
+"\n"
+"/* --- TABLA --- */\n"
+"QTableWidget {\n"
+"    font-size: 10pt;\n"
+"    color: white;\n"
+"    background-color: #000000ff; /* Fondo negro */\n"
+"    gridline-color: rgb(53, 53, 79); /* Líneas de la cuadrícula */\n"
+"    border: 1px solid rgb(20, 200, 220); /* Borde Cián */\n"
+"}\n"
+"\n"
+"/* --- ENCABEZADO DE LA TABLA (Cant, Descripción...) --- */\n"
+"QHeaderView::section {\n"
+"    background-color: rgb(20, 200, 220); /* Fondo Cián */\n"
+"    color: black; /* Texto negro para contraste */\n"
+"    font-weight: bold;\n"
+"    padding: 4px;\n"
+"    border: 1px solid rgb(53, 53, 79);\n"
 "}")
         self.stackedWidget.setObjectName("stackedWidget")
         self.page = QtWidgets.QWidget()
@@ -240,8 +280,10 @@ class Ui_Dialog(object):
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.frame_8)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.label_4 = QtWidgets.QLabel(parent=self.frame_8)
-        self.label_4.setStyleSheet("font: 87 12pt \"Arial Black\";\n"
-"color:rgb(20, 200, 220)")
+        self.label_4.setStyleSheet("font-size: 16pt;\n"
+"    font-weight: bold;\n"
+"    color: rgb(20, 200, 220); /* Color Cián principal */\n"
+"    background-color: transparent; /* Sin fondo negro */")
         self.label_4.setObjectName("label_4")
         self.horizontalLayout_4.addWidget(self.label_4)
         spacerItem1 = QtWidgets.QSpacerItem(182, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
@@ -489,7 +531,7 @@ class Ui_Dialog(object):
         self.label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:16pt; font-weight:600;\">Menu de opciones</span></p></body></html>"))
         self.btn_toggle_menu.setText(_translate("Dialog", "<"))
         self.lbl_bienvenida.setText(_translate("Dialog", "Bienvenido(a):"))
-        self.btn_usuarios.setText(_translate("Dialog", "Catalogos"))
+        self.btn_catalogos.setText(_translate("Dialog", "Catalogos"))
         self.btn_Personas.setText(_translate("Dialog", "Personas"))
         self.btn_productos.setText(_translate("Dialog", "Pedido"))
         self.pushButton.setText(_translate("Dialog", "RecepPed"))
@@ -501,6 +543,7 @@ class Ui_Dialog(object):
         self.label_2.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:20pt;\">Pago</span></p><p align=\"center\"><br/></p></body></html>"))
         self.label_5.setText(_translate("Dialog", "TextLabel"))
         self.label_4.setText(_translate("Dialog", "Control de compras"))
+        self.label_4.setProperty("cssClass", _translate("Dialog", "titulo"))
         self.label_6.setText(_translate("Dialog", "Menu de opciones"))
         self.btn_desplegar_menu_compras.setText(_translate("Dialog", ">"))
         self.lbl_user_compra.setText(_translate("Dialog", "User:"))
