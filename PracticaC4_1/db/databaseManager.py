@@ -123,4 +123,3 @@ class DatabaseManager:
             return False
         finally:
             cursor.close()
-

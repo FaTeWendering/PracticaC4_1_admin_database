@@ -144,5 +144,5 @@ class LoginWindow(QWidget):
 
         self.db_manager.registrar_acceso(login, True, "Login exitoso")
 
-        self.login_exitoso.emit(nombre_completo, puesto_str, genero_str)
+        self.login_exitoso.emit(nombre_completo, puesto_str, genero_str, login, password)
         self.hide()

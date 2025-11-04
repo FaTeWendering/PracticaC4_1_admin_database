@@ -513,6 +513,90 @@ class Ui_Dialog(object):
         self.verticalLayout_8.setStretch(0, 1)
         self.verticalLayout_8.setStretch(1, 8)
         self.stackedWidget.addWidget(self.page_5)
+        self.page_7 = QtWidgets.QWidget()
+        self.page_7.setObjectName("page_7")
+        self.verticalLayout_15 = QtWidgets.QVBoxLayout(self.page_7)
+        self.verticalLayout_15.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_15.setSpacing(0)
+        self.verticalLayout_15.setObjectName("verticalLayout_15")
+        self.frame_14 = QtWidgets.QFrame(parent=self.page_7)
+        self.frame_14.setStyleSheet("background-color: rgb(0, 0, 0);")
+        self.frame_14.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_14.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_14.setObjectName("frame_14")
+        self.horizontalLayout_6 = QtWidgets.QHBoxLayout(self.frame_14)
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.label_7 = QtWidgets.QLabel(parent=self.frame_14)
+        self.label_7.setStyleSheet("font-size: 16pt;\n"
+"    font-weight: bold;\n"
+"    color: rgb(20, 200, 220); /* Color Cián principal */\n"
+"    background-color: transparent; /* Sin fondo negro */")
+        self.label_7.setObjectName("label_7")
+        self.horizontalLayout_6.addWidget(self.label_7)
+        spacerItem2 = QtWidgets.QSpacerItem(301, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayout_6.addItem(spacerItem2)
+        self.verticalLayout_15.addWidget(self.frame_14)
+        self.frame_15 = QtWidgets.QFrame(parent=self.page_7)
+        self.frame_15.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_15.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_15.setObjectName("frame_15")
+        self.verticalLayout_16 = QtWidgets.QVBoxLayout(self.frame_15)
+        self.verticalLayout_16.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_16.setSpacing(0)
+        self.verticalLayout_16.setObjectName("verticalLayout_16")
+        self.frame_16 = QtWidgets.QFrame(parent=self.frame_15)
+        self.frame_16.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_16.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_16.setObjectName("frame_16")
+        self.verticalLayout_17 = QtWidgets.QVBoxLayout(self.frame_16)
+        self.verticalLayout_17.setObjectName("verticalLayout_17")
+        self.txt_pass_anterior = QtWidgets.QLineEdit(parent=self.frame_16)
+        self.txt_pass_anterior.setObjectName("txt_pass_anterior")
+        self.verticalLayout_17.addWidget(self.txt_pass_anterior)
+        self.txt_pass_nuevo = QtWidgets.QLineEdit(parent=self.frame_16)
+        self.txt_pass_nuevo.setObjectName("txt_pass_nuevo")
+        self.verticalLayout_17.addWidget(self.txt_pass_nuevo)
+        self.txt_pass_repetir = QtWidgets.QLineEdit(parent=self.frame_16)
+        self.txt_pass_repetir.setObjectName("txt_pass_repetir")
+        self.verticalLayout_17.addWidget(self.txt_pass_repetir)
+        self.verticalLayout_16.addWidget(self.frame_16)
+        self.frame_17 = QtWidgets.QFrame(parent=self.frame_15)
+        self.frame_17.setStyleSheet("QFrame{\n"
+"background-color:rgb(53,53,79);\n"
+"}\n"
+"QPushButton{\n"
+"font: 87 12pt \"Arial Black\";\n"
+"background-color:#000000ff;\n"
+"color: rgb(20, 200, 220);\n"
+"border-radius:5px;\n"
+"border: 1px solid white;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: black;\n"
+"}\n"
+"")
+        self.frame_17.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_17.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_17.setObjectName("frame_17")
+        self.horizontalLayout_7 = QtWidgets.QHBoxLayout(self.frame_17)
+        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+        self.btn_aceptar_pass = QtWidgets.QPushButton(parent=self.frame_17)
+        self.btn_aceptar_pass.setObjectName("btn_aceptar_pass")
+        self.horizontalLayout_7.addWidget(self.btn_aceptar_pass)
+        self.btn_cancel_pass = QtWidgets.QPushButton(parent=self.frame_17)
+        self.btn_cancel_pass.setObjectName("btn_cancel_pass")
+        self.horizontalLayout_7.addWidget(self.btn_cancel_pass)
+        self.verticalLayout_16.addWidget(self.frame_17)
+        self.verticalLayout_16.setStretch(0, 8)
+        self.verticalLayout_16.setStretch(1, 4)
+        self.verticalLayout_15.addWidget(self.frame_15)
+        self.verticalLayout_15.setStretch(0, 1)
+        self.verticalLayout_15.setStretch(1, 8)
+        self.stackedWidget.addWidget(self.page_7)
+        self.page_6 = QtWidgets.QWidget()
+        self.page_6.setObjectName("page_6")
+        self.stackedWidget.addWidget(self.page_6)
         self.verticalLayout_4.addWidget(self.stackedWidget)
         self.horizontalLayout_2.addWidget(self.frame_5)
         self.horizontalLayout_2.setStretch(0, 4)
@@ -571,6 +655,12 @@ class Ui_Dialog(object):
         self.btn_consulta_compras.setText(_translate("Dialog", "Consulta"))
         self.btn_cancelar_compras.setText(_translate("Dialog", "Cancelar"))
         self.btn_regresar_compras.setText(_translate("Dialog", "Regresar"))
+        self.label_7.setText(_translate("Dialog", "Cambiar contraseña"))
+        self.txt_pass_anterior.setPlaceholderText(_translate("Dialog", "Password Anteror"))
+        self.txt_pass_nuevo.setPlaceholderText(_translate("Dialog", "Password nuevo"))
+        self.txt_pass_repetir.setPlaceholderText(_translate("Dialog", "Repita el password nuevo"))
+        self.btn_aceptar_pass.setText(_translate("Dialog", "Aceptar"))
+        self.btn_cancel_pass.setText(_translate("Dialog", "Cancelar"))
 
 
 if __name__ == "__main__":

@@ -2,8 +2,8 @@ from PyQt6.QtCore import (
     Qt, pyqtSignal, QPropertyAnimation,
     QEasingCurve, QParallelAnimationGroup
 )
-from PyQt6.QtGui import QMouseEvent
-from PyQt6.QtWidgets import QDialog, QHeaderView
+from PyQt6.QtGui import QMouseEvent, QIcon
+from PyQt6.QtWidgets import QDialog, QHeaderView, QLineEdit, QMessageBox
 from .ui_ControlWindows import Ui_Dialog
 
 
@@ -23,6 +23,31 @@ class ControlWindows(QDialog):
         header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
         header.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+        try:
+            ruta_icono = "Gui/../../../../../../pyqt6/Imagenes/eye_on_see_show_view_vision_watch_icon_123215.png"
+            eye_icono = QIcon(ruta_icono)
+
+            self.ui.txt_pass_anterior.setEchoMode(QLineEdit.EchoMode.Password)
+            eye_action_anterior = self.ui.txt_pass_anterior.addAction(eye_icono, QLineEdit.ActionPosition.TrailingPosition)
+            eye_action_anterior.triggered.connect(
+                lambda: self.toggle_password_visibility(self.ui.txt_pass_anterior)
+            )
+
+            self.ui.txt_pass_nuevo.setEchoMode(QLineEdit.EchoMode.Password)
+            eye_action_nuevo = self.ui.txt_pass_nuevo.addAction(eye_icono, QLineEdit.ActionPosition.TrailingPosition)
+            eye_action_nuevo.triggered.connect(
+                lambda: self.toggle_password_visibility(self.ui.txt_pass_nuevo)
+            )
+
+            self.ui.txt_pass_repetir.setEchoMode(QLineEdit.EchoMode.Password)
+            eye_action_repetir = self.ui.txt_pass_repetir.addAction(eye_icono, QLineEdit.ActionPosition.TrailingPosition)
+            eye_action_repetir.triggered.connect(
+                lambda: self.toggle_password_visibility(self.ui.txt_pass_repetir)
+            )
+        except AttributeError as e:
+            print(f"ADVERTENCIA: No se pudieron crear los botones de ojo ¿Regeneraste el ui? Error: {e}")
+        except Exception as e:
+            print(f"Error inesperado configurando botones de ojo: {e}")
 
         self.menu_ancho_desplegado = 220
         self.menu_esta_oculto = False
@@ -75,10 +100,20 @@ class ControlWindows(QDialog):
         self.ui.stackedWidget.setCurrentWidget(self.ui.page_5)
 
     def mostrar_pagina_venta(self):
-        print("Botón Venta presionado - Página no conectada")
+        try:
+            self.ui.stackedWidget.setCurrentWidget(self.ui.page_6)
+        except AttributeError as e:
+            print(f"Error: La pagina 'page_6' (venta) no existe. creela en Qt Designer.")
 
     def mostrar_pagina_cambiarpass(self):
-        print("Botón CambiarPass presionado - Página no conectada")
+        try:
+            self.ui.stackedWidget.setCurrentWidget(self.ui.page_7)
+            self.limpiar_campos_password()
+            self.ui.btn_aceptar_pass.clicked.connect(self.procesar_cambio_password)
+            self.ui.btn_cancel_pass.clicked.connect(self.limpiar_campos_password)
+        except AttributeError as e:
+            print(f"Error: La pagina 'page_7' (CambiarPass) no existe. creela en Qt Designer.")
+
 
     def toggle_menu_main(self):
         if self.animacion_grupo_main and self.animacion_grupo_main.state() == QParallelAnimationGroup.State.Running:
@@ -169,6 +204,28 @@ class ControlWindows(QDialog):
         texto_bienvenida = f"{saludo}:\n{nombre_completo}\n({puesto})"
         self.ui.lbl_bienvenida.setText(texto_bienvenida)
         self.ui.lbl_user_compra.setText(f"User: {nombre_completo}\n({puesto})")
+
+    def toggle_password_visibility(self, line_edit_widget):
+        if line_edit_widget.echoMode() == line_edit_widget.EchoMode.Password:
+            line_edit_widget.setEchoMode(QLineEdit.EchoMode.Normal)
+        else:
+            line_edit_widget.setEchoMode(QLineEdit.EchoMode.Password)
+
+    def procesar_cambio_password(self, login, password):
+        password_anterior = self.ui.txt_pass_anterior.text()
+        password_nuevo = self.ui.txt_pass_nuevo.text()
+        password_repetir = self.ui.txt_pass_repetir.text()
+
+        if not password == password_anterior:
+            QMessageBox.warning(self, "Accon denegada",
+                                "La contraseña anterior no es igual a la ingresada")
+        
+
+
+    def limpiar_campos_password(self):
+        self.ui.txt_pass_anterior.clear()
+        self.ui.txt_pass_nuevo.clear()
+        self.ui.txt_pass_repetir.clear()
 
     def cerrar_sesion(self):
         self.ui.lbl_bienvenida.setText("Bienvenido(a):")

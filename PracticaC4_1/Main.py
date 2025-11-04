@@ -20,8 +20,9 @@ class MainApplication():
     def run(self):
         self.login_win.show()
 
-    def mostrar_control(self, nombre_completo, puesto, genero):
+    def mostrar_control(self, nombre_completo, puesto, genero, login, password):
         self.control_win.set_user_info(nombre_completo, puesto, genero)
+        self.control_win.procesar_cambio_password(login, password)
         self.control_win.show()
 
     def mostrar_login(self):
