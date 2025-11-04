@@ -16,6 +16,8 @@ class ControlWindows(QDialog):
         self.db_manager = db_manager
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+        self.current_login = None
+        self.current_password = None
         tabla_compras = self.ui.Table_compra
         header = tabla_compras.horizontalHeader()
         header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
@@ -194,7 +196,7 @@ class ControlWindows(QDialog):
             self.dragging = False
             self.offset = None
 
-    def set_user_info(self, nombre_completo, puesto, genero):
+    def set_user_info(self, nombre_completo, puesto, genero, login, password):
         saludo = "Bienvenido(a)"
         if genero.lower() == 'masculino':
             saludo = "Bienvenido"
@@ -205,21 +207,43 @@ class ControlWindows(QDialog):
         self.ui.lbl_bienvenida.setText(texto_bienvenida)
         self.ui.lbl_user_compra.setText(f"User: {nombre_completo}\n({puesto})")
 
+        self.current_login = login
+        self.current_password = password
+
     def toggle_password_visibility(self, line_edit_widget):
         if line_edit_widget.echoMode() == line_edit_widget.EchoMode.Password:
             line_edit_widget.setEchoMode(QLineEdit.EchoMode.Normal)
         else:
             line_edit_widget.setEchoMode(QLineEdit.EchoMode.Password)
 
-    def procesar_cambio_password(self, login, password):
+    def procesar_cambio_password(self):
         password_anterior = self.ui.txt_pass_anterior.text()
         password_nuevo = self.ui.txt_pass_nuevo.text()
         password_repetir = self.ui.txt_pass_repetir.text()
 
-        if not password == password_anterior:
-            QMessageBox.warning(self, "Accon denegada",
-                                "La contraseña anterior no es igual a la ingresada")
-        
+        login_actual = self.current_login
+        password_actual_guardado = self.current_password
+
+        if not password_actual_guardado == password_anterior:
+            QMessageBox.warning(self, "Acción denegada",
+                                "La contraseña anterior no es igual a la ingresada.")
+            return
+            # 2. Validar que los campos no estén vacíos
+        if not password_nuevo or not password_repetir:
+            QMessageBox.warning(self, "Error", "El campo 'Password Nuevo' y 'Repetir' no pueden estar vacíos.")
+            return
+
+        if password_nuevo != password_repetir:
+            QMessageBox.warning(self, "Error", "Las nuevas contraseñas no coinciden.")
+            return
+
+        if password_nuevo == password_actual_guardado:
+            QMessageBox.warning(self, "Error", "La nueva contraseña no puede ser igual a la anterior.")
+            return
+
+        print(f"¡ÉXITO! (temporal) El usuario {login_actual} quiere cambiar su contraseña a {password_nuevo}")
+        QMessageBox.information(self, "Éxito", "Contraseña actualizada (simulación).")
+        self.limpiar_campos_password()
 
 
     def limpiar_campos_password(self):

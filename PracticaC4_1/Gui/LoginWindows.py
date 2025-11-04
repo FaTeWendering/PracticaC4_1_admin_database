@@ -6,7 +6,7 @@ from .ui_LoginWindows import Ui_Dialog
 
 
 class LoginWindow(QWidget):
-    login_exitoso = pyqtSignal(str, str, str)
+    login_exitoso = pyqtSignal(str, str, str, str, str)
     def __init__(self, db_manager):
         super().__init__()
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
