@@ -123,3 +123,54 @@ class DatabaseManager:
             return False
         finally:
             cursor.close()
+
+    def verificar_password_existente(self, nuevo_password):
+        """
+        Verifica si un password ya existe en la tabla mUsuario.
+        Retorna True si existe, False si no existe.
+        """
+        if not self.connection or not self.connection.is_connected():
+            return True  # Por seguridad, si no hay BD, no dejamos cambiar
+
+        cursor = self.connection.cursor()
+        query = "SELECT CvUser FROM mUsuario WHERE Password = %s;"
+
+        try:
+            cursor.execute(query, (nuevo_password,))
+            resultado = cursor.fetchone()
+
+            # Si fetchone() encuentra algo (no es None), significa que SÍ existe
+            return resultado is not None
+
+        except Error as e:
+            print(f"ERROR AL VERIFICAR PASSWORD: {e}")
+            return True  # Por seguridad, bloqueamos el cambio
+        finally:
+            cursor.close()
+
+    def actualizar_password(self, login_usuario, nuevo_password):
+        """
+        Actualiza la contraseña de un usuario específico usando su Login.
+        """
+        if not self.connection or not self.connection.is_connected():
+            print("Error: No hay conexión a la base de datos.")
+            return False
+
+        cursor = self.connection.cursor()
+        query = """
+            UPDATE mUsuario
+            SET Password = %s
+            WHERE Login = %s;
+        """
+        try:
+            cursor.execute(query, (nuevo_password, login_usuario))
+            self.connection.commit()
+
+            return cursor.rowcount > 0  # Retorna True si la fila fue actualizada
+
+        except Error as e:
+            print(f"ERROR AL ACTUALIZAR PASSWORD: {e}")
+            self.connection.rollback()
+            return False
+        finally:
+            cursor.close()

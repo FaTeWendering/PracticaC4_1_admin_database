@@ -4,6 +4,7 @@ from PyQt6.QtCore import (
 )
 from PyQt6.QtGui import QMouseEvent, QIcon
 from PyQt6.QtWidgets import QDialog, QHeaderView, QLineEdit, QMessageBox
+import re
 from .ui_ControlWindows import Ui_Dialog
 
 
@@ -224,26 +225,73 @@ class ControlWindows(QDialog):
         login_actual = self.current_login
         password_actual_guardado = self.current_password
 
+        # --- INICIO DE VALIDACIONES ---
+
+        # 1. Validar que la contraseña anterior sea correcta
         if not password_actual_guardado == password_anterior:
             QMessageBox.warning(self, "Acción denegada",
                                 "La contraseña anterior no es igual a la ingresada.")
+            self.limpiar_campos_password()
             return
-            # 2. Validar que los campos no estén vacíos
+
+        # 2. Validar que los campos no estén vacíos
         if not password_nuevo or not password_repetir:
             QMessageBox.warning(self, "Error", "El campo 'Password Nuevo' y 'Repetir' no pueden estar vacíos.")
+            self.limpiar_campos_password()
             return
 
+        # 3. Validar que las nuevas contraseñas no coincidan
         if password_nuevo != password_repetir:
             QMessageBox.warning(self, "Error", "Las nuevas contraseñas no coinciden.")
+            self.limpiar_campos_password()
             return
 
+        # 4. Validar que la nueva no sea igual a la anterior
         if password_nuevo == password_actual_guardado:
             QMessageBox.warning(self, "Error", "La nueva contraseña no puede ser igual a la anterior.")
+            self.limpiar_campos_password()
             return
 
-        print(f"¡ÉXITO! (temporal) El usuario {login_actual} quiere cambiar su contraseña a {password_nuevo}")
-        QMessageBox.information(self, "Éxito", "Contraseña actualizada (simulación).")
-        self.limpiar_campos_password()
+        # 5. Validar criterios del PDF (4-10 chars, 1 mayús, 1 min, 1 num, 1 especial)
+        if not (4 <= len(password_nuevo) <= 10):
+            QMessageBox.warning(self, "Error", "La contraseña debe tener entre 4 y 10 caracteres.")
+            self.limpiar_campos_password()
+            return
+        if not re.search(r"[A-Z]", password_nuevo):
+            QMessageBox.warning(self, "Error", "La contraseña debe tener al menos una mayúscula.")
+            self.limpiar_campos_password()
+            return
+        if not re.search(r"[a-z]", password_nuevo):
+            QMessageBox.warning(self, "Error", "La contraseña debe tener al menos una minúscula.")
+            self.limpiar_campos_password()
+            return
+        if not re.search(r"[0-9]", password_nuevo):
+            QMessageBox.warning(self, "Error", "La contraseña debe tener al menos un número.")
+            self.limpiar_campos_password()
+            return
+        if not re.search(r"[\+\*\#\%]", password_nuevo):
+            QMessageBox.warning(self, "Error", "La contraseña debe tener al menos un caracter especial (+, *, #, %).")
+            self.limpiar_campos_password()
+            return
+
+        # 6. Validar que la nueva contraseña no exista en la BD
+        if self.db_manager.verificar_password_existente(password_nuevo):
+            QMessageBox.warning(self, "Error", "Esa contraseña ya está en uso por otro usuario. Elija una diferente.")
+            self.limpiar_campos_password()
+            return
+
+        # --- FIN DE VALIDACIONES ---
+
+        # 7. Si todo es correcto, actualizar la BD
+        exito = self.db_manager.actualizar_password(login_actual, password_nuevo)
+
+        if exito:
+            QMessageBox.information(self, "Éxito", "¡Contraseña actualizada correctamente!")
+            # Actualizamos la contraseña guardada en memoria
+            self.current_password = password_nuevo
+            self.limpiar_campos_password()
+        else:
+            QMessageBox.critical(self, "Error de Base de Datos", "No se pudo actualizar la contraseña.")
 
 
     def limpiar_campos_password(self):

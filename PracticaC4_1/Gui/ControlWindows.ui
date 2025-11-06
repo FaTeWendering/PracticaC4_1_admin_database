@@ -1065,6 +1065,56 @@ QPushButton:hover {
                        </widget>
                       </item>
                       <item>
+                       <widget class="QLabel" name="caracter">
+                        <property name="styleSheet">
+                         <string notr="true">color: rgb(224, 27, 36);</string>
+                        </property>
+                        <property name="text">
+                         <string>4-10 caracteres</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="mayus">
+                        <property name="styleSheet">
+                         <string notr="true">color: rgb(224, 27, 36);</string>
+                        </property>
+                        <property name="text">
+                         <string>Al menos una mayuscula</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="minus">
+                        <property name="styleSheet">
+                         <string notr="true">color:rgb(224, 27, 36)</string>
+                        </property>
+                        <property name="text">
+                         <string>Al menos una minuscula</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="numer">
+                        <property name="styleSheet">
+                         <string notr="true">color: rgb(224, 27, 36);</string>
+                        </property>
+                        <property name="text">
+                         <string>Al menos un numero</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="caracter_especial">
+                        <property name="styleSheet">
+                         <string notr="true">color: rgb(224, 27, 36);</string>
+                        </property>
+                        <property name="text">
+                         <string>Al menos un caracter especial(+,*,#,%)</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <widget class="QLineEdit" name="txt_pass_repetir">
                         <property name="placeholderText">
                          <string>Repita el password nuevo</string>
