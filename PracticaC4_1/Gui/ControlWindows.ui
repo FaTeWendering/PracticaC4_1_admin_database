@@ -143,7 +143,7 @@ QPushButton:hover {
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>../../../../../../pyqt6/Imagenes/Minimizar.png</normaloff>../../../../../../pyqt6/Imagenes/Minimizar.png</iconset>
+             <normaloff>../../Imagenes/Minimizar.png</normaloff>../../Imagenes/Minimizar.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -169,7 +169,7 @@ QPushButton:hover {
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>../../../../../../pyqt6/Imagenes/Maximizar.png</normaloff>../../../../../../pyqt6/Imagenes/Maximizar.png</iconset>
+             <normaloff>../../Imagenes/Maximizar.png</normaloff>../../Imagenes/Maximizar.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -195,7 +195,7 @@ QPushButton:hover {
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>../../../../../../pyqt6/Imagenes/Cerrar.png</normaloff>../../../../../../pyqt6/Imagenes/Cerrar.png</iconset>
+             <normaloff>../../Imagenes/Cerrar.png</normaloff>../../Imagenes/Cerrar.png</iconset>
            </property>
            <property name="iconSize">
             <size>

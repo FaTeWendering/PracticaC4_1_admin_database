@@ -75,7 +75,7 @@ color: rgb(20,200,220);</string>
         </property>
         <property name="icon">
          <iconset>
-          <normaloff>../../../../../../pyqt6/Imagenes/Minimizar.png</normaloff>../../../../../../pyqt6/Imagenes/Minimizar.png</iconset>
+          <normaloff>../../Imagenes/Minimizar.png</normaloff>../../Imagenes/Minimizar.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -95,7 +95,7 @@ color: rgb(20,200,220);</string>
         </property>
         <property name="icon">
          <iconset>
-          <normaloff>../../../../../../pyqt6/Imagenes/Maximizar.png</normaloff>../../../../../../pyqt6/Imagenes/Maximizar.png</iconset>
+          <normaloff>../../Imagenes/Maximizar.png</normaloff>../../Imagenes/Maximizar.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -115,7 +115,7 @@ color: rgb(20,200,220);</string>
         </property>
         <property name="icon">
          <iconset>
-          <normaloff>../../../../../../pyqt6/Imagenes/Cerrar.png</normaloff>../../../../../../pyqt6/Imagenes/Cerrar.png</iconset>
+          <normaloff>../../Imagenes/Cerrar.png</normaloff>../../Imagenes/Cerrar.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -198,7 +198,7 @@ color: rgb(20,200,220);</string>
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>logo.png</pixmap>
+          <pixmap>../../Imagenes/logo.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -307,7 +307,7 @@ background-color: rgb(255, 255, 255);</string>
                  </property>
                  <property name="icon">
                   <iconset>
-                   <normaloff>../../../../../../pyqt6/Imagenes/eye_on_see_show_view_vision_watch_icon_123215.png</normaloff>../../../../../../pyqt6/Imagenes/eye_on_see_show_view_vision_watch_icon_123215.png</iconset>
+                   <normaloff>../../Imagenes/eye_on_see_show_view_vision_watch_icon_123215.png</normaloff>../../Imagenes/eye_on_see_show_view_vision_watch_icon_123215.png</iconset>
                  </property>
                  <property name="iconSize">
                   <size>
