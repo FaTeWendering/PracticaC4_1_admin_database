@@ -1,9 +1,20 @@
+-- MySQL Script Unificado
+-- Model: bdPracticaC4_1 (Adaptado para Proyecto Escuela de Música)
+-- Version: 2.0
+
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
+-- -----------------------------------------------------
+-- Schema bdPracticaC4_1
+-- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `bdPracticaC4_1` DEFAULT CHARACTER SET utf8 ;
 USE `bdPracticaC4_1` ;
+
+-- -----------------------------------------------------
+-- Tablas Originales (Comercial)
+-- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cCalle` (
   `CvCalle` INT NOT NULL AUTO_INCREMENT,
@@ -17,13 +28,11 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cMunicp` (
   PRIMARY KEY (`CvMunicp`))
 ENGINE = InnoDB;
 
-
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cColon` (
   `CvColon` INT NOT NULL AUTO_INCREMENT,
   `DsColon` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`CvColon`))
 ENGINE = InnoDB;
-
 
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cEstado` (
   `CvEstado` INT NOT NULL AUTO_INCREMENT,
@@ -31,13 +40,11 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cEstado` (
   PRIMARY KEY (`CvEstado`))
 ENGINE = InnoDB;
 
-
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cPais` (
   `CvPais` INT NOT NULL AUTO_INCREMENT,
   `DsPais` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`CvPais`))
 ENGINE = InnoDB;
-
 
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`mDirec` (
   `CvDirec` INT NOT NULL AUTO_INCREMENT,
@@ -81,13 +88,11 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`mDirec` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cDepto` (
   `CvDepto` INT NOT NULL AUTO_INCREMENT,
   `DsDepto` VARCHAR(80) NOT NULL,
   PRIMARY KEY (`CvDepto`))
 ENGINE = InnoDB;
-
 
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cMarca` (
   `CvMarca` INT NOT NULL AUTO_INCREMENT,
@@ -95,13 +100,11 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cMarca` (
   PRIMARY KEY (`CvMarca`))
 ENGINE = InnoDB;
 
-
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cPresent` (
   `CvPresent` INT NOT NULL AUTO_INCREMENT,
   `DsPresent` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`CvPresent`))
 ENGINE = InnoDB;
-
 
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`mProduct` (
   `CvProduct` INT NOT NULL AUTO_INCREMENT,
@@ -112,7 +115,7 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`mProduct` (
   `Cantidad` DECIMAL(10,2) NOT NULL,
   `PcoCto` DECIMAL(10,2) NOT NULL,
   `PcoVta` DECIMAL(10,2) NOT NULL,
-  `PorOfer` DECIMAL(5,2) NOT NULL,
+  `PorOfer` DECIMAL(10,2) NOT NULL, -- Corregido a 10,2
   `Stock` INT NOT NULL,
   `CvProved` INT NOT NULL,
   PRIMARY KEY (`CvProduct`),
@@ -136,13 +139,11 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`mProduct` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cApellid` (
   `CvApellid` INT NOT NULL AUTO_INCREMENT,
   `DsApellid` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`CvApellid`))
 ENGINE = InnoDB;
-
 
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cTpPerso` (
   `CvTpPerson` INT NOT NULL AUTO_INCREMENT,
@@ -150,13 +151,11 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cTpPerso` (
   PRIMARY KEY (`CvTpPerson`))
 ENGINE = InnoDB;
 
-
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cAficion` (
   `CvAficion` INT NOT NULL AUTO_INCREMENT,
   `DsAficion` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`CvAficion`))
 ENGINE = InnoDB;
-
 
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cGenero` (
   `CvGenero` INT NOT NULL AUTO_INCREMENT,
@@ -164,13 +163,11 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cGenero` (
   PRIMARY KEY (`CvGenero`))
 ENGINE = InnoDB;
 
-
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cPuesto` (
   `CvPuesto` INT NOT NULL AUTO_INCREMENT,
   `DsPuesto` VARCHAR(80) NOT NULL,
   PRIMARY KEY (`CvPuesto`))
 ENGINE = InnoDB;
-
 
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`CGdoAca` (
   `CvGdoAca` INT NOT NULL AUTO_INCREMENT,
@@ -178,13 +175,11 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`CGdoAca` (
   PRIMARY KEY (`CvGdoAca`))
 ENGINE = InnoDB;
 
-
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cNombre` (
   `CvNombre` INT NOT NULL AUTO_INCREMENT,
   `DsNombre` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`CvNombre`))
 ENGINE = InnoDB;
-
 
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`mDtsPerson` (
   `CvPerson` INT NOT NULL AUTO_INCREMENT,
@@ -213,7 +208,6 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`mDtsPerson` (
   INDEX `CvGdoAca_idx` (`CvGdoAca` ASC),
   INDEX `CvNombre_idx` (`CvNombre` ASC),
   INDEX `CvDepto_idx` (`CvDepto` ASC),
-  
   CONSTRAINT `Fk_ApePat`
     FOREIGN KEY (`CvApePat`)
     REFERENCES `bdPracticaC4_1`.`cApellid` (`CvApellid`)
@@ -224,7 +218,6 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`mDtsPerson` (
     REFERENCES `bdPracticaC4_1`.`cApellid` (`CvApellid`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  
   CONSTRAINT `CvGenero`
     FOREIGN KEY (`CvGenero`)
     REFERENCES `bdPracticaC4_1`.`cGenero` (`CvGenero`)
@@ -267,7 +260,10 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`mDtsPerson` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-
+-- -----------------------------------------------------
+-- Tabla `mUsuario` (MODIFICADA)
+-- Se eliminan cLogin y cPassword.
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`mUsuario` (
   `CvUser` INT NOT NULL AUTO_INCREMENT,
   `CvPerson` INT NOT NULL,
@@ -284,6 +280,117 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`mUsuario` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- NUEVAS TABLAS (PROYECTO)
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Tabla `bitacora_accesos` (Módulo Auditoría)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`bitacora_accesos` (
+  `id_acceso` INT NOT NULL AUTO_INCREMENT,
+  `usuario_intento` VARCHAR(100) NOT NULL,
+  `fecha_hora` DATETIME NOT NULL,
+  `exito` BOOLEAN NOT NULL,
+  `detalle_evento` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id_acceso`)
+) ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Tabla `cClases` (Módulo Escuela de Música)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cClases` (
+  `CvClase` INT NOT NULL AUTO_INCREMENT,
+  `DsClase` VARCHAR(100) NOT NULL COMMENT 'Nombre de la clase, ej: \"Percusión Nivel 1\".',
+  `CvProfesor` INT NOT NULL COMMENT 'El ID del profesor (es un mUsuario).',
+  `Aula` VARCHAR(45) NULL,
+  `Hora` TIME NULL,
+  PRIMARY KEY (`CvClase`),
+  INDEX `fk_cClases_mUsuario_idx` (`CvProfesor` ASC),
+  CONSTRAINT `fk_cClases_mUsuario`
+    FOREIGN KEY (`CvProfesor`)
+    REFERENCES `bdPracticaC4_1`.`mUsuario` (`CvUser`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+COMMENT = 'Catálogo de las clases que ofrece la escuela.';
+
+
+-- -----------------------------------------------------
+-- Tabla `eAsistencia` (Módulo Escuela de Música)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`eAsistencia` (
+  `CvAsistencia` INT NOT NULL AUTO_INCREMENT,
+  `CvClase` INT NOT NULL,
+  `CvUsuario` INT NOT NULL COMMENT 'El ID del alumno (es un mUsuario).',
+  `FechaAsistencia` DATE NOT NULL COMMENT 'Fecha de la asistencia.',
+  `Estado` VARCHAR(20) NOT NULL COMMENT 'Ej: \"Asistió\", \"Falta\", \"Justificado\"',
+  PRIMARY KEY (`CvAsistencia`),
+  INDEX `fk_eAsistencia_cClases_idx` (`CvClase` ASC),
+  INDEX `fk_eAsistencia_mUsuario_idx` (`CvUsuario` ASC),
+  CONSTRAINT `fk_eAsistencia_cClases`
+    FOREIGN KEY (`CvClase`)
+    REFERENCES `bdPracticaC4_1`.`cClases` (`CvClase`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_eAsistencia_mUsuario`
+    FOREIGN KEY (`CvUsuario`)
+    REFERENCES `bdPracticaC4_1`.`mUsuario` (`CvUser`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+COMMENT = 'Registro de asistencias de alumnos a las clases.';
+
+
+-- -----------------------------------------------------
+-- Tabla `fCobro` (Módulo Escuela de Música)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`fCobro` (
+  `CvCobro` INT NOT NULL AUTO_INCREMENT,
+  `CvUsuario` INT NOT NULL COMMENT 'El ID del alumno (es un mUsuario).',
+  `FechaCobro` DATE NOT NULL,
+  `Tipo` VARCHAR(50) NOT NULL COMMENT 'Ej: \"Inscripción\", \"Mensualidad\".',
+  `Monto` DECIMAL(10,2) NOT NULL,
+  `Descuento` DECIMAL(10,2) NULL DEFAULT 0,
+  `Estado` VARCHAR(20) NOT NULL COMMENT 'Ej: \"Pagado\", \"Pendiente\".',
+  PRIMARY KEY (`CvCobro`),
+  INDEX `fk_fCobro_mUsuario_idx` (`CvUsuario` ASC),
+  CONSTRAINT `fk_fCobro_mUsuario`
+    FOREIGN KEY (`CvUsuario`)
+    REFERENCES `bdPracticaC4_1`.`mUsuario` (`CvUser`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+COMMENT = 'Registro de cobros y pagos de los alumnos.';
+
+
+-- -----------------------------------------------------
+-- Tabla `tEvaluacion` (Módulo Escuela de Música)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`tEvaluacion` (
+  `CvEvaluacion` INT NOT NULL AUTO_INCREMENT,
+  `CvUsuario` INT NOT NULL COMMENT 'El ID del alumno (es un mUsuario).',
+  `CvClase` INT NOT NULL,
+  `Nota` DECIMAL(5,2) NULL,
+  `Comentarios` TEXT NULL,
+  PRIMARY KEY (`CvEvaluacion`),
+  INDEX `fk_tEvaluacion_mUsuario_idx` (`CvUsuario` ASC),
+  INDEX `fk_tEvaluacion_cClases_idx` (`CvClase` ASC),
+  CONSTRAINT `fk_tEvaluacion_mUsuario`
+    FOREIGN KEY (`CvUsuario`)
+    REFERENCES `bdPracticaC4_1`.`mUsuario` (`CvUser`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_tEvaluacion_cClases`
+    FOREIGN KEY (`CvClase`)
+    REFERENCES `bdPracticaC4_1`.`cClases` (`CvClase`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+COMMENT = 'Evaluaciones y notas de los alumnos en sus clases.';
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

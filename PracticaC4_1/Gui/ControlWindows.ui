@@ -324,30 +324,23 @@ font-family: &quot;Tahoma&quot;, sans-serif;</string>
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="btn_productos">
-                 <property name="text">
-                  <string>Pedido</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <widget class="QPushButton" name="pushButton">
                  <property name="text">
-                  <string>RecepPed</string>
+                  <string>Asistencia</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton_2">
+                <widget class="QPushButton" name="btn_pagos">
                  <property name="text">
-                  <string>Compra</string>
+                  <string>Pagos</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QPushButton" name="pushButton_3">
                  <property name="text">
-                  <string>Venta</string>
+                  <string>Evaluaciones</string>
                  </property>
                 </widget>
                </item>
@@ -463,44 +456,8 @@ QHeaderView::section {
     border: 1px solid rgb(53, 53, 79);
 }</string>
               </property>
-              <widget class="QWidget" name="page">
-               <layout class="QVBoxLayout" name="verticalLayout_7"/>
-              </widget>
-              <widget class="QWidget" name="page_2">
-               <layout class="QVBoxLayout" name="verticalLayout_6">
-                <item>
-                 <widget class="QLabel" name="label_3">
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:26pt;&quot;&gt;Personas&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="page_3">
-               <layout class="QVBoxLayout" name="verticalLayout_5">
-                <item>
-                 <widget class="QLabel" name="label_2">
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;Pago&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="page_4">
-               <layout class="QHBoxLayout" name="horizontalLayout_3">
-                <item>
-                 <widget class="QLabel" name="label_5">
-                  <property name="text">
-                   <string>TextLabel</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="page_5">
-               <layout class="QVBoxLayout" name="verticalLayout_8" stretch="1,8">
+              <widget class="QWidget" name="Inicio">
+               <layout class="QVBoxLayout" name="verticalLayout_7">
                 <property name="spacing">
                  <number>0</number>
                 </property>
@@ -518,448 +475,73 @@ QHeaderView::section {
                 </property>
                 <item>
                  <widget class="QFrame" name="frame_8">
-                  <property name="styleSheet">
-                   <string notr="true">background-color: rgb(0, 0, 0);</string>
-                  </property>
                   <property name="frameShape">
                    <enum>QFrame::StyledPanel</enum>
                   </property>
                   <property name="frameShadow">
                    <enum>QFrame::Raised</enum>
                   </property>
-                  <layout class="QHBoxLayout" name="horizontalLayout_4">
+                  <layout class="QVBoxLayout" name="verticalLayout_5">
                    <item>
-                    <widget class="QLabel" name="label_4">
-                     <property name="styleSheet">
-                      <string notr="true">font-size: 16pt;
-    font-weight: bold;
-    color: rgb(20, 200, 220); /* Color Cián principal */
-    background-color: transparent; /* Sin fondo negro */</string>
-                     </property>
+                    <widget class="QLabel" name="lbl_reloj">
                      <property name="text">
-                      <string>Control de compras</string>
-                     </property>
-                     <property name="cssClass" stdset="0">
-                      <string>titulo</string>
+                      <string>00:00:00</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <spacer name="horizontalSpacer_2">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>182</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="label_6">
-                     <property name="styleSheet">
-                      <string notr="true">font:87 12pt &quot;Arial Black&quot;;
-color:rgb(20, 200, 220)</string>
-                     </property>
+                    <widget class="QLabel" name="lbl_logo_inicio">
                      <property name="text">
-                      <string>Menu de opciones</string>
+                      <string/>
+                     </property>
+                     <property name="pixmap">
+                      <pixmap>../../Imagenes/logo.png</pixmap>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="btn_desplegar_menu_compras">
-                     <property name="styleSheet">
-                      <string notr="true">QPushButton{
-font: 87 12pt &quot;Arial Black&quot;;
-background-color:#000000ff;
-color: rgb(20, 200, 220);
-border-radius:5px;
-border: 1px solid white;
-}
-
-QPushButton:hover {
-    background-color: white;
-}</string>
-                     </property>
-                     <property name="text">
-                      <string>&gt;</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QFrame" name="frame_9">
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                  <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="8,4">
-                   <property name="spacing">
-                    <number>0</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
-                   <item>
-                    <widget class="QFrame" name="frame_11">
-                     <property name="styleSheet">
-                      <string notr="true">QFrame{
-background-color:rgb(53,53,79);
-}
-QPushButton{
-font: 87 12pt &quot;Arial Black&quot;;
-background-color:#000000ff;
-color: rgb(20, 200, 220);
-border-radius:5px;
-border: 1px solid white;
-}
-
-QPushButton:hover {
-    background-color: black;
-}</string>
-                     </property>
-                     <property name="frameShape">
-                      <enum>QFrame::StyledPanel</enum>
-                     </property>
-                     <property name="frameShadow">
-                      <enum>QFrame::Raised</enum>
-                     </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_12" stretch="4,8">
-                      <property name="spacing">
-                       <number>0</number>
-                      </property>
-                      <property name="leftMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="topMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="rightMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="bottomMargin">
-                       <number>0</number>
-                      </property>
-                      <item>
-                       <widget class="QFrame" name="frame_12">
-                        <property name="frameShape">
-                         <enum>QFrame::StyledPanel</enum>
-                        </property>
-                        <property name="frameShadow">
-                         <enum>QFrame::Raised</enum>
-                        </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_13">
-                         <item>
-                          <widget class="QLabel" name="lbl_user_compra">
-                           <property name="text">
-                            <string>User:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <layout class="QGridLayout" name="gridLayout">
-                           <item row="0" column="0">
-                            <widget class="QLabel" name="lbl_nom_provee_compra">
-                             <property name="text">
-                              <string>Nombre del proveedor:</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="1">
-                            <widget class="QComboBox" name="cb_nom_provee_compra">
-                             <property name="styleSheet">
-                              <string notr="true">font: 87 12pt &quot;Arial Black&quot;;
-background-color:#000000ff;
-color: rgb(20, 200, 220);
-border-radius:5px;
-border: 1px solid white;</string>
-                             </property>
-                            </widget>
-                           </item>
-                          </layout>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="lbl_info_provee_compra">
-                           <property name="text">
-                            <string>Informacion del proveedor</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <layout class="QGridLayout" name="gridLayout_2">
-                           <item row="0" column="0">
-                            <widget class="QLabel" name="lbl_producto_compra">
-                             <property name="text">
-                              <string>Producto:</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="1">
-                            <widget class="QComboBox" name="cb_producto_compra">
-                             <property name="styleSheet">
-                              <string notr="true">font: 87 12pt &quot;Arial Black&quot;;
-background-color:#000000ff;
-color: rgb(20, 200, 220);
-border-radius:5px;
-border: 1px solid white;</string>
-                             </property>
-                            </widget>
-                           </item>
-                          </layout>
-                         </item>
-                        </layout>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QFrame" name="frame_13">
-                        <property name="styleSheet">
-                         <string notr="true">QComboBox{
-font: 87 12pt &quot;Arial Black&quot;;
-background-color:#000000ff;
-color: rgb(20, 200, 220);
-border-radius:5px;
-border: 1px solid white;
-}</string>
-                        </property>
-                        <property name="frameShape">
-                         <enum>QFrame::StyledPanel</enum>
-                        </property>
-                        <property name="frameShadow">
-                         <enum>QFrame::Raised</enum>
-                        </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_14">
-                         <item>
-                          <widget class="QTableWidget" name="Table_compra">
-                           <property name="styleSheet">
-                            <string notr="true">font: 87 12pt &quot;Arial Black&quot;;
-background-color:#000000ff;
-color: rgb(20, 200, 220);
-border-radius:5px;
-border: 1px solid white;</string>
-                           </property>
-                           <property name="columnCount">
-                            <number>4</number>
-                           </property>
-                           <column>
-                            <property name="text">
-                             <string>Cant</string>
-                            </property>
-                           </column>
-                           <column>
-                            <property name="text">
-                             <string>Descripción</string>
-                            </property>
-                           </column>
-                           <column>
-                            <property name="text">
-                             <string>Precio</string>
-                            </property>
-                           </column>
-                           <column>
-                            <property name="text">
-                             <string>SubTotal</string>
-                            </property>
-                           </column>
-                          </widget>
-                         </item>
-                         <item>
-                          <layout class="QGridLayout" name="gridLayout_3">
-                           <item row="0" column="0">
-                            <widget class="QLabel" name="label_11">
-                             <property name="text">
-                              <string>Subtotal</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="0">
-                            <widget class="QLabel" name="label_12">
-                             <property name="text">
-                              <string>Iva</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="2" column="0">
-                            <widget class="QLabel" name="label_13">
-                             <property name="text">
-                              <string>Total</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="1">
-                            <widget class="QLabel" name="lbl_subtotal_compras">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="1">
-                            <widget class="QLabel" name="lbl_iva_compras">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="2" column="1">
-                            <widget class="QLabel" name="lbl_total_compras">
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                          </layout>
-                         </item>
-                         <item>
-                          <layout class="QGridLayout" name="gridLayout_4">
-                           <item row="0" column="0">
-                            <widget class="QLabel" name="label_16">
-                             <property name="text">
-                              <string>FmPago</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="1">
-                            <widget class="QComboBox" name="cb_Fm_pago_compras"/>
-                           </item>
-                           <item row="0" column="2">
-                            <widget class="QLabel" name="label_18">
-                             <property name="text">
-                              <string>MetPago</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="3">
-                            <widget class="QComboBox" name="cb_metpago_compras"/>
-                           </item>
-                           <item row="1" column="0">
-                            <widget class="QLabel" name="label_17">
-                             <property name="text">
-                              <string>Anticipo</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="1">
-                            <widget class="QLineEdit" name="txt_anticipo_compras">
-                             <property name="styleSheet">
-                              <string notr="true">background-color: rgb(255, 255, 255);</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="2">
-                            <widget class="QLabel" name="label_19">
-                             <property name="text">
-                              <string>Anticipo</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="3">
-                            <widget class="QLineEdit" name="txt_anticipo_compras_2">
-                             <property name="styleSheet">
-                              <string notr="true">background-color: rgb(255, 255, 255);</string>
-                             </property>
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </widget>
-                           </item>
-                          </layout>
-                         </item>
-                        </layout>
-                       </widget>
-                      </item>
-                     </layout>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QFrame" name="frame_10">
-                     <property name="styleSheet">
-                      <string notr="true">QFrame{
-background-color:rgb(53,53,79);
-}
-QPushButton{
-font: 87 12pt &quot;Arial Black&quot;;
-background-color:#000000ff;
-color: rgb(20, 200, 220);
-border-radius:5px;
-border: 1px solid white;
-}
-
-QPushButton:hover {
-    background-color: black;
-}</string>
-                     </property>
-                     <property name="frameShape">
-                      <enum>QFrame::StyledPanel</enum>
-                     </property>
-                     <property name="frameShadow">
-                      <enum>QFrame::Raised</enum>
-                     </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_11">
-                      <item>
-                       <widget class="QPushButton" name="btn_nuevo_compras">
-                        <property name="text">
-                         <string>Nuevo</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="btn_borrar_compras">
-                        <property name="text">
-                         <string>Borrar</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="btn_actualizar_compras">
-                        <property name="text">
-                         <string>Actualizar</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="btn_consulta_compras">
-                        <property name="text">
-                         <string>Consulta</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="btn_cancelar_compras">
-                        <property name="text">
-                         <string>Cancelar</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="btn_regresar_compras">
-                        <property name="text">
-                         <string>Regresar</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </widget>
+                    <layout class="QHBoxLayout" name="horizontalLayout_3">
+                     <item>
+                      <spacer name="horizontalSpacer_4">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="lbl_bienvenida_inicio">
+                       <property name="text">
+                        <string>Bienvenido al Sistema de Gestión de la Escuela de Música</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_2">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </widget>
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="page_7">
+              <widget class="QWidget" name="Cambiarpass">
                <layout class="QVBoxLayout" name="verticalLayout_15" stretch="1,8">
                 <property name="spacing">
                  <number>0</number>
@@ -1172,7 +754,6 @@ QPushButton:hover {
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="page_6"/>
              </widget>
             </item>
            </layout>
