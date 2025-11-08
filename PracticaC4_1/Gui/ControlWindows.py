@@ -22,14 +22,6 @@ class ControlWindows(QDialog):
         self.current_login = None
         self.current_password = None
 
-        # --- AJUSTE DE LA TABLA DE COMPRAS ---
-        tabla_compras = self.ui.Table_compra
-        header = tabla_compras.horizontalHeader()
-        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)  # Descripción
-        header.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)  # Cant
-        header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)  # Precio
-        header.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)  # SubTotal
-
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
 
         # --- ESTILOS PARA VALIDACIÓN (PASSWORD) ---
@@ -102,8 +94,6 @@ class ControlWindows(QDialog):
         self.compras_menu_ancho = 180
         self.compras_menu_oculto = False
         self.animacion_grupo_compras = None
-        self.ui.frame_10.setMinimumWidth(self.compras_menu_ancho)
-        self.ui.frame_10.setMaximumWidth(self.compras_menu_ancho)
 
         # --- CONEXIONES DE BOTONES DE LA VENTANA ---
         self.ui.btn_cerrar.clicked.connect(self.close)
@@ -113,55 +103,18 @@ class ControlWindows(QDialog):
         self.ui.btn_toggle_menu.setText("<")
 
         # --- CONEXIONES DE BOTONES DEL MENÚ PRINCIPAL ---
-        self.ui.btn_catalogos.clicked.connect(self.mostrar_pagina_catalogos)
-        self.ui.btn_Personas.clicked.connect(self.mostrar_pagina_personas)
-        self.ui.btn_productos.clicked.connect(self.mostrar_pagina_pedido)
-        self.ui.pushButton.clicked.connect(self.mostrar_pagina_recepped)
-        self.ui.pushButton_2.clicked.connect(self.mostrar_pagina_compra)
-        self.ui.pushButton_3.clicked.connect(self.mostrar_pagina_venta)
         self.ui.pushButton_4.clicked.connect(self.mostrar_pagina_cambiarpass)
         self.ui.btn_cerrarsesion.clicked.connect(self.cerrar_sesion)
-
-        # --- CONEXIONES DE LA PÁGINA DE COMPRAS ---
-        self.ui.btn_desplegar_menu_compras.clicked.connect(self.toggle_menu_compras)
-        self.ui.btn_nuevo_compras.clicked.connect(self.compras_boton_nuevo)
-        self.ui.btn_actualizar_compras.clicked.connect(self.compras_boton_actualizar)
-        self.ui.btn_borrar_compras.clicked.connect(self.compras_boton_borrar)
-        self.ui.btn_cancelar_compras.clicked.connect(self.compras_boton_cancelar)
 
         self.dragging = False
         self.offset = None
 
-        self.actualizar_estado_botones_compras()
-
     # --- MÓDULO: NAVEGACIÓN DE PÁGINAS ---
-
-    def mostrar_pagina_catalogos(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.page)
-
-    def mostrar_pagina_personas(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.page_2)
-
-    def mostrar_pagina_pedido(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.page_3)
-
-    def mostrar_pagina_recepped(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.page_4)
-
-    def mostrar_pagina_compra(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.page_5)
-        self.compras_boton_cancelar()
-
-    def mostrar_pagina_venta(self):
-        try:
-            self.ui.stackedWidget.setCurrentWidget(self.ui.page_6)
-        except AttributeError as e:
-            print(f"Error: La pagina 'page_6' (venta) no existe. creela en Qt Designer.")
 
     def mostrar_pagina_cambiarpass(self):
         try:
             # Asumiendo que se llama 'page_7'
-            self.ui.stackedWidget.setCurrentWidget(self.ui.page_7)
+            self.ui.stackedWidget.setCurrentWidget(self.ui.Cambiarpass)
             self.limpiar_campos_password()
 
             try:
@@ -173,7 +126,7 @@ class ControlWindows(QDialog):
             self.ui.btn_aceptar_pass.clicked.connect(self.procesar_cambio_password)
             self.ui.btn_cancel_pass.clicked.connect(self.limpiar_campos_password)
         except AttributeError as e:
-            print(f"Error: La pagina 'page_7' (CambiarPass) no existe. creela en Qt Designer. {e}")
+            print(f"Error: La pagina (CambiarPass) no existe. creela en Qt Designer. {e}")
 
     # --- MÓDULO: ANIMACIONES DE MENÚS ---
 
@@ -203,33 +156,6 @@ class ControlWindows(QDialog):
         self.animacion_grupo_main.addAnimation(self.animacion_min)
         self.animacion_grupo_main.addAnimation(self.animacion_max)
         self.animacion_grupo_main.start()
-
-    def toggle_menu_compras(self):
-        if self.animacion_grupo_compras and self.animacion_grupo_compras.state() == QParallelAnimationGroup.State.Running:
-            return
-
-        ancho_fin = 0
-        if self.compras_menu_oculto:
-            ancho_fin = self.compras_menu_ancho
-            self.ui.btn_desplegar_menu_compras.setText("<")  # Flecha izquierda
-            self.compras_menu_oculto = False
-        else:
-            self.ui.btn_desplegar_menu_compras.setText(">")  # Flecha derecha
-            self.compras_menu_oculto = True
-
-        self.animacion_min_c = QPropertyAnimation(self.ui.frame_10, b"minimumWidth")
-        self.animacion_max_c = QPropertyAnimation(self.ui.frame_10, b"maximumWidth")
-        self.animacion_min_c.setDuration(300)
-        self.animacion_min_c.setEndValue(ancho_fin)
-        self.animacion_min_c.setEasingCurve(QEasingCurve.Type.InOutCubic)
-        self.animacion_max_c.setDuration(300)
-        self.animacion_max_c.setEndValue(ancho_fin)
-        self.animacion_max_c.setEasingCurve(QEasingCurve.Type.InOutCubic)
-
-        self.animacion_grupo_compras = QParallelAnimationGroup()
-        self.animacion_grupo_compras.addAnimation(self.animacion_min_c)
-        self.animacion_grupo_compras.addAnimation(self.animacion_max_c)
-        self.animacion_grupo_compras.start()
 
     # --- MÉTODOS BÁSICOS DE LA VENTANA ---
 
@@ -263,7 +189,6 @@ class ControlWindows(QDialog):
 
         texto_bienvenida = f"{saludo}:\n{nombre_completo}\n({puesto})"
         self.ui.lbl_bienvenida.setText(texto_bienvenida)
-        self.ui.lbl_user_compra.setText(f"User: {nombre_completo}")
 
         self.current_login = login
         self.current_password = password
@@ -445,61 +370,3 @@ class ControlWindows(QDialog):
             self.ui.caracter_especial.setStyleSheet(self.style_crit_error)
         except AttributeError:
             pass
-
-    # --- MÓDULO: LÓGICA DE COMPRAS (CRUD) ---
-
-    def actualizar_estado_botones_compras(self):
-        """Habilita o deshabilita los botones de Compras según el estado."""
-
-        if self.estado_compras == "navegando":
-            self.ui.btn_nuevo_compras.setText("Nuevo")
-            self.ui.btn_nuevo_compras.setEnabled(True)
-            self.ui.btn_actualizar_compras.setText("Actualizar")
-            self.ui.btn_actualizar_compras.setEnabled(True)
-            self.ui.btn_borrar_compras.setEnabled(True)
-            self.ui.btn_consulta_compras.setEnabled(True)
-            self.ui.btn_regresar_compras.setEnabled(True)
-            self.ui.btn_cancelar_compras.setEnabled(False)
-
-        elif self.estado_compras == "insertando" or self.estado_compras == "modificando":
-            if self.estado_compras == "insertando":
-                self.ui.btn_nuevo_compras.setText("Guardar")
-                self.ui.btn_nuevo_compras.setEnabled(True)
-                self.ui.btn_actualizar_compras.setEnabled(False)
-            else:  # modificando
-                self.ui.btn_nuevo_compras.setEnabled(False)
-                self.ui.btn_actualizar_compras.setText("Guardar")
-                self.ui.btn_actualizar_compras.setEnabled(True)
-
-            self.ui.btn_borrar_compras.setEnabled(False)
-            self.ui.btn_consulta_compras.setEnabled(False)
-            self.ui.btn_regresar_compras.setEnabled(False)
-            self.ui.btn_cancelar_compras.setEnabled(True)
-
-    def compras_boton_nuevo(self):
-        if self.estado_compras == "insertando":
-            print("Lógica para GUARDAR un nuevo registro de compra...")
-            self.estado_compras = "navegando"
-        else:
-            print("Cambiando a modo INSERCIÓN de compra.")
-            self.estado_compras = "insertando"
-            # self.limpiar_campos_compras()
-        self.actualizar_estado_botones_compras()
-
-    def compras_boton_actualizar(self):
-        if self.estado_compras == "modificando":
-            print("Lógica para GUARDAR un registro de compra actualizado...")
-            self.estado_compras = "navegando"
-        else:
-            print("Cambiando a modo MODIFICACIÓN de compra.")
-            self.estado_compras = "modificando"
-        self.actualizar_estado_botones_compras()
-
-    def compras_boton_borrar(self):
-        print("Lógica para BORRAR registro de compra...")
-        pass
-
-    def compras_boton_cancelar(self):
-        print("Operación cancelada, volviendo a modo navegación.")
-        self.estado_compras = "navegando"
-        self.actualizar_estado_botones_compras()
