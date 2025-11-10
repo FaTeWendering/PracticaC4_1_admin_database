@@ -993,10 +993,10 @@ QPushButton:hover {
                          <item>
                           <widget class="QStackedWidget" name="stackedWidget_pagos">
                            <property name="currentIndex">
-                            <number>0</number>
+                            <number>1</number>
                            </property>
                            <widget class="QWidget" name="pagos_page_consulta">
-                            <layout class="QHBoxLayout" name="horizontalLayout_25">
+                            <layout class="QVBoxLayout" name="verticalLayout_21" stretch="1,9">
                              <property name="spacing">
                               <number>0</number>
                              </property>
@@ -1013,7 +1013,64 @@ QPushButton:hover {
                               <number>0</number>
                              </property>
                              <item>
-                              <widget class="QTableWidget" name="tabla_pagos"/>
+                              <widget class="QFrame" name="frame_27">
+                               <property name="frameShape">
+                                <enum>QFrame::StyledPanel</enum>
+                               </property>
+                               <property name="frameShadow">
+                                <enum>QFrame::Raised</enum>
+                               </property>
+                               <layout class="QHBoxLayout" name="horizontalLayout_26">
+                                <item>
+                                 <widget class="QLabel" name="label_19">
+                                  <property name="text">
+                                   <string>Filtrar nombre:</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item>
+                                 <widget class="QLineEdit" name="filtro_pagos_nombre"/>
+                                </item>
+                                <item>
+                                 <spacer name="horizontalSpacer_7">
+                                  <property name="orientation">
+                                   <enum>Qt::Horizontal</enum>
+                                  </property>
+                                  <property name="sizeHint" stdset="0">
+                                   <size>
+                                    <width>133</width>
+                                    <height>20</height>
+                                   </size>
+                                  </property>
+                                 </spacer>
+                                </item>
+                                <item>
+                                 <widget class="QLabel" name="label_20">
+                                  <property name="text">
+                                   <string>Estado</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item>
+                                 <widget class="QComboBox" name="filtro_pagos_estado"/>
+                                </item>
+                               </layout>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QFrame" name="frame_26">
+                               <property name="frameShape">
+                                <enum>QFrame::StyledPanel</enum>
+                               </property>
+                               <property name="frameShadow">
+                                <enum>QFrame::Raised</enum>
+                               </property>
+                               <layout class="QHBoxLayout" name="horizontalLayout_25">
+                                <item>
+                                 <widget class="QTableWidget" name="tabla_pagos"/>
+                                </item>
+                               </layout>
+                              </widget>
                              </item>
                             </layout>
                            </widget>
@@ -1074,7 +1131,11 @@ QPushButton:hover {
                                    </widget>
                                   </item>
                                   <item>
-                                   <widget class="QComboBox" name="combo_pagos_alumno"/>
+                                   <widget class="QComboBox" name="combo_pagos_alumno">
+                                    <property name="editable">
+                                     <bool>true</bool>
+                                    </property>
+                                   </widget>
                                   </item>
                                  </layout>
                                 </item>

@@ -4,8 +4,8 @@ from PyQt6.QtCore import (
     QEasingCurve, QParallelAnimationGroup
 )
 from PyQt6.QtGui import QMouseEvent, QIcon, QDoubleValidator
-from PyQt6.QtWidgets import QDialog, QHeaderView, QLineEdit, QMessageBox, QTableWidgetItem, QAbstractItemView
-from PyQt6.QtCore import QDate, QLocale
+from PyQt6.QtWidgets import QDialog, QHeaderView, QLineEdit, QMessageBox, QTableWidgetItem, QAbstractItemView, QCompleter
+from PyQt6.QtCore import QDate, QLocale, Qt
 from .ui_ControlWindows import Ui_Dialog
 
 
@@ -52,7 +52,7 @@ class ControlWindows(QDialog):
         # --- CONFIGURACIÓN DE BOTONES DE OJO (CAMBIAR PASS) ---
         try:
             # Reusa la ruta del ícono de LoginWindows
-            ruta_icono = "Imagenes/eye_on_see_show_view_vision_watch_icon_123215.png"
+            ruta_icono = "Gui\\../../Imagenes/eye_on_see_show_view_vision_watch_icon_123215.png"
             eye_icono = QIcon(ruta_icono)
 
             # Conectamos las señales 'textChanged' para la validación en vivo
@@ -128,10 +128,13 @@ class ControlWindows(QDialog):
             self.ui.btn_pagos_consultar.clicked.connect(self.accion_pagos_consultar)
             self.ui.btn_pagos_cancelar.clicked.connect(self.accion_pagos_cancelar)
             self.ui.btn_pagos_regresar.clicked.connect(self.accion_pagos_regresar)
+            self.ui.filtro_pagos_nombre.textChanged.connect(self.actualizar_filtros_tabla)
+            self.ui.filtro_pagos_estado.currentIndexChanged.connect(self.actualizar_filtros_tabla)
 
             # Conectar señales de los ComboBox
             self.ui.combo_pagos_tipo.currentIndexChanged.connect(self.actualizar_monto_y_total)
             self.ui.combo_pagos_descuento.currentIndexChanged.connect(self.actualizar_monto_y_total)
+            self.ui.combo_pagos_estado.addItems(["Pagado", "Pendiente"])
 
             # Poner validadores a los campos de dinero (para que muestren $0.00)
             locale = QLocale(QLocale.Language.Spanish, QLocale.Country.Mexico)
@@ -150,11 +153,17 @@ class ControlWindows(QDialog):
         try:
             self.ui.stackedWidget.setCurrentWidget(self.ui.Pagos)
 
+            self.db_manager.registrar_acceso(
+                self.current_login, True, "AUDITORIA APP: Acceso al módulo de Pagos"
+            )
+
             self.cargar_tabla_pagos()
 
             self.cargar_combobox_alumnos()
 
             self.cargar_combobox_pagos_y_descuentos()
+
+            self.cargar_combobox_filtro_estado()
 
             if not self.menu_esta_oculto:
                 self.toggle_menu_main()
@@ -167,6 +176,11 @@ class ControlWindows(QDialog):
         try:
             # Asumiendo que se llama 'page_7'
             self.ui.stackedWidget.setCurrentWidget(self.ui.Cambiarpass)
+
+            self.db_manager.registrar_acceso(
+                self.current_login, True, "AUDITORIA APP: Acceso al módulo CambiarPass"
+            )
+
             self.limpiar_campos_password()
 
             try:
@@ -449,7 +463,7 @@ class ControlWindows(QDialog):
             self.ui.btn_pagos_borrar.setEnabled(fila_seleccionada != -1)  # Activo solo si algo está seleccionado
 
             self.ui.btn_pagos_cancelar.setEnabled(False)
-            self.ui.btn_pagos_consultar.setEnabled(False)
+            self.ui.btn_pagos_consultar.setEnabled(True)
 
         elif estado == "nuevo":
             self.ui.btn_pagos_nuevo.setText("Guardar")
@@ -500,18 +514,30 @@ class ControlWindows(QDialog):
         )
 
     def cargar_combobox_alumnos(self):
-        """Llena el ComboBox de alumnos en el formulario de pagos."""
+        """Llena el ComboBox de alumnos con filtro y auto-completado
+        para el director, o lo bloqueara para el estudiante."""
         self.ui.combo_pagos_alumno.clear()
 
         if self.current_puesto == 'Estudiante':
             self.ui.combo_pagos_alumno.addItem(self.current_nombre_completo, self.current_cv_user)
             self.ui.combo_pagos_alumno.setEnabled(False)
+            self.ui.combo_pagos_alumno.setEditable(False)
         else:
             self.ui.combo_pagos_alumno.setEnabled(True)
+            self.ui.combo_pagos_alumno.setEditable(True)
             alumnos = self.db_manager.get_alumnos_para_combobox()
-            self.ui.combo_pagos_alumno.addItem("Seleccione un alumno...", None)
+            nombres_alumnos = []
+            self.ui.combo_pagos_alumno.addItem("Seleccionar alumno...", None)
             for cv_user, nombre_completo in alumnos:
                 self.ui.combo_pagos_alumno.addItem(nombre_completo, cv_user)
+                nombres_alumnos.append(nombre_completo)
+
+            completer = QCompleter(nombres_alumnos)
+
+            completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+            completer.setFilterMode(Qt.MatchFlag.MatchContains)
+
+            self.ui.combo_pagos_alumno.setCompleter(completer)
 
     def cargar_combobox_pagos_y_descuentos(self):
         """Llena los ComboBox de Tipos de Pago y Descuentos."""
@@ -575,7 +601,6 @@ class ControlWindows(QDialog):
         self.ui.combo_pagos_estado.setCurrentIndex(0)
         if self.current_puesto != 'Estudiante':
             self.ui.combo_pagos_alumno.setCurrentIndex(0)
-        self.current_pago_id_edicion = None
 
     def accion_pagos_nuevo(self):
         if self.estado_actual_pagos == "nuevo":
@@ -583,24 +608,119 @@ class ControlWindows(QDialog):
         else:
             self.ui.stackedWidget_pagos.setCurrentWidget(self.ui.pagos_page_formulario)
             self.limpiar_formulario_pagos()
+            self.current_pago_id_edicion = None
             self.configurar_botones_pagos("nuevo")
 
     def accion_pagos_actualizar(self):
         if self.estado_actual_pagos == "actualizando":
+            # Si el estado es "actualizando", el botón dice "Guardar".
             self.guardar_actualizacion_pago()
         else:
-            QMessageBox.information(self, "Pendiente",
-                                    "La lógica de 'Actualizar' (cargar datos) aún no está implementada.")
-            # self.ui.stackedWidget_pagos.setCurrentWidget(self.ui.pagos_page_formulario)
-            # self.configurar_botones_pagos("actualizando")
+            # Si el estado es "consultando", el botón dice "Actualizar".
+            # 1. Obtener la fila seleccionada
+            fila = self.ui.tabla_pagos.currentRow()
+            if fila == -1:
+                QMessageBox.warning(self, "Error", "No has seleccionado ningún pago para actualizar.")
+                return
+
+            # 2. Determinar las columnas (pueden cambiar si es admin o estudiante)
+            headers = [self.ui.tabla_pagos.horizontalHeaderItem(c).text() for c in
+                       range(self.ui.tabla_pagos.columnCount())]
+
+            # 3. Leer los datos de la tabla
+            try:
+                # Usamos un diccionario para que sea más fácil de leer
+                datos_fila = {}
+                for idx, header in enumerate(headers):
+                    datos_fila[header] = self.ui.tabla_pagos.item(fila, idx).text()
+
+                # 4. Guardar el ID del pago que estamos editando
+                self.current_pago_id_edicion = int(datos_fila["ID Cobro"])
+
+                # 5. Cargar los datos en el formulario
+                self.limpiar_formulario_pagos()  # Limpia y resetea
+
+                # Usamos nuestro "ayudante" para seleccionar los ComboBox
+                self._set_combo_by_text(self.ui.combo_pagos_alumno, datos_fila["Alumno"])
+                self._set_combo_by_text(self.ui.combo_pagos_tipo, datos_fila["Tipo"])
+
+                # Para el descuento, calculamos el porcentaje
+                monto = float(datos_fila["Monto"])
+                descuento = float(datos_fila["Descuento"])
+                if monto > 0:
+                    porcentaje_buscado = (descuento / monto) * 100
+                    self._set_combo_by_text(self.ui.combo_pagos_descuento, f"({porcentaje_buscado:.2f}%)")
+                else:
+                    self.ui.combo_pagos_descuento.setCurrentIndex(0)  # Sin descuento
+
+                self.ui.combo_pagos_estado.setCurrentText(datos_fila["Estado"])
+
+                # Cargar la fecha
+                fecha = QDate.fromString(datos_fila["Fecha"], "yyyy-MM-dd")
+                self.ui.date_pagos_fecha.setDate(fecha)
+
+                # 6. Cambiar de vista y de estado
+                self.ui.stackedWidget_pagos.setCurrentWidget(self.ui.pagos_page_formulario)
+                self.configurar_botones_pagos("actualizando")
+
+            except Exception as e:
+                print(f"Error al leer los datos de la tabla: {e}")
+                QMessageBox.critical(self, "Error", "No se pudieron cargar los datos de la fila seleccionada.")
 
     def accion_pagos_borrar(self):
-        QMessageBox.information(self, "Pendiente", "La lógica de 'Borrar' aún no está implementada.")
+        """
+        Toma la fila seleccionada, pide confirmación y la elimina.
+        """
+        # 1. Obtener la fila seleccionada
+        fila = self.ui.tabla_pagos.currentRow()
+        if fila == -1:
+            QMessageBox.warning(self, "Error", "No has seleccionado ningún pago para borrar.")
+            return
+
+        try:
+            # 2. Obtener el ID Cobro (siempre es la columna 0)
+            id_cobro_item = self.ui.tabla_pagos.item(fila, 0)
+            id_a_borrar = int(id_cobro_item.text())
+
+            # 3. Obtener el nombre del Alumno para un mensaje más claro
+            col_alumno_idx = -1
+            for col in range(self.ui.tabla_pagos.columnCount()):
+                header = self.ui.tabla_pagos.horizontalHeaderItem(col).text()
+                if header == "Alumno":
+                    col_alumno_idx = col
+                    break
+
+            nombre_alumno = self.ui.tabla_pagos.item(fila,
+                                                     col_alumno_idx).text() if col_alumno_idx != -1 else "el pago seleccionado"
+
+            # 4. Pedir confirmación al usuario (Regla de seguridad)
+            confirmacion = QMessageBox.question(self, "Confirmar Eliminación",
+                                                f"¿Estás seguro de que deseas eliminar el pago de {nombre_alumno} (ID: {id_a_borrar})?\n\nEsta acción no se puede deshacer.",
+                                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+
+            # 5. Si el usuario confirma
+            if confirmacion == QMessageBox.StandardButton.Yes:
+                # 6. Llamar a la BD para eliminar
+                exito = self.db_manager.delete_pago(id_a_borrar, self.current_login)
+
+                if exito:
+                    QMessageBox.information(self, "Éxito", "El pago ha sido eliminado correctamente.")
+                    self.cargar_tabla_pagos()  # Recargar la tabla
+                else:
+                    QMessageBox.critical(self, "Error de BD", "No se pudo eliminar el pago.")
+
+        except Exception as e:
+            print(f"Error al borrar pago: {e}")
+            QMessageBox.critical(self, "Error", "No se pudo obtener el ID del pago a borrar.")
 
     def accion_pagos_consultar(self):
-        """Vuelve a la vista de tabla (consulta)."""
+        """Vuelve a la vista de tabla (consulta), RECARTGA los datos
+        y LIMPIA los filtros."""
         self.ui.stackedWidget_pagos.setCurrentWidget(self.ui.pagos_page_consulta)
         self.configurar_botones_pagos("consultando")
+
+        self.ui.filtro_pagos_nombre.clear()
+        self.ui.filtro_pagos_estado.setCurrentIndex(0)
         self.cargar_tabla_pagos()
 
     def accion_pagos_cancelar(self):
@@ -615,18 +735,164 @@ class ControlWindows(QDialog):
 
     def guardar_nuevo_pago(self):
         """Valida los datos del formulario y llama al db_manager para INSERTAR."""
-        # 1. Obtener datos del formulario
-        cv_usuario = self.ui.combo_pagos_alumno.currentData()
-        fecha = self.ui.date_pagos_fecha.date().toString("yyyy-MM-dd")
 
+        # --- INICIO DE LÓGICA DE VALIDACIÓN DE ALUMNO CORREGIDA ---
+
+        # 1. Obtener el texto actual del ComboBox
+        texto_alumno = self.ui.combo_pagos_alumno.currentText()
+        cv_usuario = None  # Reiniciamos el ID
+
+        # 2. Revisar que no sea el texto por defecto
+        if texto_alumno != "Seleccione un alumno...":
+            # 3. Buscar el texto en la lista del ComboBox
+            # Usamos MatchExactly para asegurarnos de que el texto es idéntico a uno de la lista
+            index = self.ui.combo_pagos_alumno.findText(texto_alumno, Qt.MatchFlag.MatchExactly)
+
+            if index != -1:  # Si SÍ lo encontró en la lista
+                # 4. Obtenemos el ID (cv_user) guardado en ese índice
+                cv_usuario = self.ui.combo_pagos_alumno.itemData(index)
+
+        # --- FIN DE LÓGICA CORREGIDA ---
+
+        # 5. Obtener el resto de los datos (esto ya estaba bien)
+        fecha = self.ui.date_pagos_fecha.date().toString("yyyy-MM-dd")
         tipo_data = self.ui.combo_pagos_tipo.currentData()
         desc_data = self.ui.combo_pagos_descuento.currentData()
-
         estado = self.ui.combo_pagos_estado.currentText()
 
-        # 2. Validar datos
+        # 6. Validar datos
         if not cv_usuario:
-            QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un alumno.")
+            # Esta validación ahora es más inteligente:
+            if texto_alumno == "Seleccione un alumno...":
+                QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un alumno.")
+            else:
+                # Este es el nuevo caso: el usuario escribió un nombre que NO existe
+                QMessageBox.warning(self, "Alumno no encontrado",
+                                    f"El alumno '{texto_alumno}' no existe.\n\n"
+                                    "Por favor, créelo primero en el módulo 'Personas' "
+                                    "antes de registrarle un pago.")
+            return
+
+        if not tipo_data or tipo_data[0] is None:
+            QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un Tipo de Pago.")
+            return
+        if not desc_data or desc_data[0] is None:
+            QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un Descuento.")
+            return
+
+        # 7. Obtener valores finales para la BD (esto ya estaba bien)
+        tipo_str = self.ui.combo_pagos_tipo.currentText().split(" (")[0]
+        monto_final = float(tipo_data[1])
+        porcentaje_final = float(desc_data[1])
+        descuento_calculado = monto_final * porcentaje_final
+
+        # 8. Enviar a la Base de Datos (esto ya estaba bien)
+        exito = self.db_manager.add_pago(
+            cv_usuario=cv_usuario,
+            fecha=fecha,
+            tipo=tipo_str,
+            monto=monto_final,
+            descuento=descuento_calculado,
+            estado=estado,
+            admin_login=self.current_login
+        )
+
+        # 9. Informar al usuario y recargar (esto ya estaba bien)
+        if exito:
+            QMessageBox.information(self, "Éxito", "Pago registrado correctamente.")
+            self.accion_pagos_consultar()  # Volver a la tabla
+        else:
+            QMessageBox.critical(self, "Error de BD", "No se pudo registrar el pago en la base de datos.")
+
+
+    def cargar_combobox_filtro_estado(self):
+        """Llena el combobox de filtro con los estados de pago."""
+        self.ui.filtro_pagos_estado.clear()
+        self.ui.filtro_pagos_estado.addItem("Todos")
+        self.ui.filtro_pagos_estado.addItem("Pagado")
+        self.ui.filtro_pagos_estado.addItem("Pendiente")
+
+    def actualizar_filtros_tabla(self):
+        """Filtra la tabla en vivo basado en el QlineEdit de nombre
+        y el QcomboBox de estado.
+        """
+        #1. Obtener los valores de los filtros
+        filtro_nombre =  self.ui.filtro_pagos_nombre.text().lower()
+        filtro_estado = self.ui.filtro_pagos_estado.currentText()
+
+        #Determinar las columnas correctas
+        col_alumno_idx = -1
+        col_estado_idx = -1
+
+        for col in range(self.ui.tabla_pagos.columnCount()):
+            header = self.ui.tabla_pagos.horizontalHeaderItem(col).text()
+            if header == "Alumno":
+                col_alumno_idx = col
+            elif header == "Estado":
+                col_estado_idx = col
+
+        if col_alumno_idx == -1 or col_estado_idx == -1:
+            print("Error no se encontraron las columnas 'Alumno' o 'Estado para filtrar.'")
+
+        #2. Iterar sobre todas las filas de la tabla
+        for fila in range(self.ui.tabla_pagos.rowCount()):
+            #3. Obtener el texto de las celdas de alumno y estado
+            item_alumno = self.ui.tabla_pagos.item(fila, col_alumno_idx).text().lower()
+            item_estado = self.ui.tabla_pagos.item(fila, col_estado_idx).text()
+
+            #4. Comprobar si coinciden con los filtros
+            match_nombre = filtro_nombre in item_alumno
+            match_estado = (filtro_estado == "Todos" or filtro_estado == item_estado)
+
+            #5. Ocultar o mostrar la fila
+            if match_nombre and match_estado:
+                self.ui.tabla_pagos.setRowHidden(fila, False)
+            else:
+                self.ui.tabla_pagos.setRowHidden(fila, True)
+
+    def _set_combo_by_text(self, combobox, texto_a_buscar):
+        """
+        Busca un texto en un QComboBox y lo selecciona.
+        Usa 'MatchContains' para encontrar (ej. "Inscripción" en "Inscripción ($500.00)")
+        """
+        if not texto_a_buscar:
+            combobox.setCurrentIndex(0)  # Poner en "Seleccione..."
+            return
+
+        # findText devuelve el índice de la primera coincidencia
+        index = combobox.findText(texto_a_buscar, Qt.MatchFlag.MatchContains)
+
+        if index != -1:  # Si lo encontró
+            combobox.setCurrentIndex(index)
+        else:
+            combobox.setCurrentIndex(0)  # No se encontró, poner en "Seleccione..."
+
+    def guardar_actualizacion_pago(self):
+        """Valida y guarda los datos de un pago MODIFICADO."""
+
+        # 1. Obtener el ID del pago que estamos editando
+        if self.current_pago_id_edicion is None:
+            QMessageBox.critical(self, "Error", "No se ha seleccionado ningún pago para actualizar.")
+            return
+
+        cv_cobro = self.current_pago_id_edicion
+
+        # 2. Obtener datos del formulario (es la misma lógica de "Nuevo")
+        texto_alumno = self.ui.combo_pagos_alumno.currentText()
+        cv_usuario = None
+        if texto_alumno != "Seleccione un alumno...":
+            index = self.ui.combo_pagos_alumno.findText(texto_alumno, Qt.MatchFlag.MatchExactly)
+            if index != -1:
+                cv_usuario = self.ui.combo_pagos_alumno.itemData(index)
+
+        fecha = self.ui.date_pagos_fecha.date().toString("yyyy-MM-dd")
+        tipo_data = self.ui.combo_pagos_tipo.currentData()
+        desc_data = self.ui.combo_pagos_descuento.currentData()
+        estado = self.ui.combo_pagos_estado.currentText()
+
+        # 3. Validar datos
+        if not cv_usuario:
+            QMessageBox.warning(self, "Datos incompletos", "El alumno seleccionado no es válido.")
             return
         if not tipo_data or tipo_data[0] is None:
             QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un Tipo de Pago.")
@@ -635,28 +901,27 @@ class ControlWindows(QDialog):
             QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un Descuento.")
             return
 
-        # 3. Obtener valores finales para la BD
-        # El 'Tipo' que guardamos es el string (ej. "Mensualidad")
-        # El 'Monto' y 'Descuento' son los valores numéricos calculados
-
-        tipo_str = self.ui.combo_pagos_tipo.currentText().split(" (")[0]  # Obtiene "Mensualidad"
+        # 4. Obtener valores finales para la BD
+        tipo_str = self.ui.combo_pagos_tipo.currentText().split(" (")[0]
         monto_final = float(tipo_data[1])
         porcentaje_final = float(desc_data[1])
-        descuento_calculado = monto_final * porcentaje_final  # Guardamos el monto del descuento
+        descuento_calculado = monto_final * porcentaje_final
 
-        # 4. Enviar a la Base de Datos
-        exito = self.db_manager.add_pago(
+        # 5. Enviar a la Base de Datos (¡Llamamos a UPDATE!)
+        exito = self.db_manager.update_pago(
+            cv_cobro=cv_cobro,
             cv_usuario=cv_usuario,
             fecha=fecha,
             tipo=tipo_str,
             monto=monto_final,
             descuento=descuento_calculado,
-            estado=estado
+            estado=estado,
+            admin_login=self.current_login
         )
 
-        # 5. Informar al usuario y recargar
+        # 6. Informar al usuario y recargar
         if exito:
-            QMessageBox.information(self, "Éxito", "Pago registrado correctamente.")
+            QMessageBox.information(self, "Éxito", "Pago actualizado correctamente.")
             self.accion_pagos_consultar()  # Volver a la tabla
         else:
-            QMessageBox.critical(self, "Error de BD", "No se pudo registrar el pago en la base de datos.")
+            QMessageBox.critical(self, "Error de BD", "No se pudo actualizar el pago.")

@@ -256,26 +256,33 @@ class DatabaseManager:
         finally:
             cursor.close()
 
-    def add_pago(self, cv_usuario, fecha, tipo, monto, descuento, estado):
-        """Insertar un nuevo registro de pago en fCobro"""
+    def add_pago(self, cv_usuario, fecha, tipo, monto, descuento, estado, admin_login):
+        """Insertar un nuevo registro de pago en fCobro Y REGISTRA EN BITACORA."""
         if not self.connection or not self.connection.is_connected():
             return False
         query = """
-        INSERT INTO fCobro (CvUsuario, FechaCobro, Tipo, Monto, Descuento, Estado)
-        VALUES (%s, %s, %s, %s, %s, %s);
-        """
+                INSERT INTO fCobro (CvUsuario, FechaCobro, Tipo, Monto, Descuento, Estado)
+                VALUES (%s, %s, %s, %s, %s, %s); \
+                """
         cursor = self.connection.cursor()
         try:
             cursor.execute(query, (cv_usuario, fecha, tipo, monto, descuento, estado))
             self.connection.commit()
+
+            # --- INICIO DE AUDITORÍA ---
+            # Obtenemos el ID del pago que acabamos de insertar
+            nuevo_pago_id = cursor.lastrowid
+            detalle_evento = f"AUDITORIA BD: INSERT en fCobro. ID: {nuevo_pago_id}, Alumno ID: {cv_usuario}"
+            self.registrar_acceso(admin_login, True, detalle_evento)
+            # --- FIN DE AUDITORÍA ---
+
             return True
         except Error as e:
             print(f"Error al añadir pago {e}")
+            self.connection.rollback()  # <--- ¡IMPORTANTE! Asegúrate de tener rollback aquí
             return False
         finally:
             cursor.close()
-
-        # (Aquí irían también las funciones 'update_pago' y 'delete_pago', que podemos añadir después)
 
     def get_tipos_pago(self):
         """Obtiene todos los tipos de pago (ID, Nombre, Monto) para el ComboBox."""
@@ -308,4 +315,63 @@ class DatabaseManager:
             return []
         finally:
             cursor.close()
+
+    def update_pago(self, cv_cobro, cv_usuario, fecha, tipo, monto, descuento, estado, admin_login):
+        """Actualiza un registro de pago existente en fCobro Y REGISTRA EN BITACORA."""
+        if not self.connection or not self.connection.is_connected():
+            return False
+
+        query = """
+                UPDATE fCobro
+                SET CvUsuario  = %s,
+                    FechaCobro = %s,
+                    Tipo       = %s,
+                    Monto      = %s,
+                    Descuento  = %s,
+                    Estado     = %s
+                WHERE CvCobro = %s;
+                """
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(query, (cv_usuario, fecha, tipo, monto, descuento, estado, cv_cobro))
+            self.connection.commit()
+
+            # --- INICIO DE AUDITORÍA ---
+            detalle_evento = f"AUDITORIA BD: UPDATE en fCobro. ID: {cv_cobro}"
+            self.registrar_acceso(admin_login, True, detalle_evento)
+            # --- FIN DE AUDITORÍA ---
+
+            return True
+        except Error as e:
+            print(f"Error al actualizar pago: {e}")
+            self.connection.rollback()
+            return False
+        finally:
+            cursor.close()
+
+    def delete_pago(self, cv_cobro, admin_login):
+        """Elimina un registro de pago de fCobro Y REGISTRA EN BITACORA."""
+        if not self.connection or not self.connection.is_connected():
+            return False
+
+        query = "DELETE FROM fCobro WHERE CvCobro = %s;"
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(query, (cv_cobro,))
+            self.connection.commit()
+
+            # --- INICIO DE AUDITORÍA ---
+            detalle_evento = f"AUDITORIA BD: DELETE en fCobro. ID: {cv_cobro}"
+            self.registrar_acceso(admin_login, True, detalle_evento)
+            # --- FIN DE AUDITORÍA ---
+
+            return True
+        except Error as e:
+            print(f"Error al eliminar pago: {e}")
+            self.connection.rollback()
+            return False
+        finally:
+            cursor.close()
+
+
             
