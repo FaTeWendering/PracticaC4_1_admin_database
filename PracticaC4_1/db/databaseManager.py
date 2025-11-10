@@ -150,7 +150,7 @@ class DatabaseManager:
 
     def actualizar_password(self, login_usuario, nuevo_password):
         """
-        Actualiza la contraseña de un usuario específico usando su Login.
+        Actualiza la contraseña de un usuario específico Y REGISTRA EN BITACORA.
         """
         if not self.connection or not self.connection.is_connected():
             print("Error: No hay conexión a la base de datos.")
@@ -165,6 +165,11 @@ class DatabaseManager:
         try:
             cursor.execute(query, (nuevo_password, login_usuario))
             self.connection.commit()
+
+            # --- INICIO DE AUDITORÍA DE SEGURIDAD ---
+            detalle_evento = "AUDITORIA SEGURIDAD: Cambio de contraseña exitoso."
+            self.registrar_acceso(login_usuario, True, detalle_evento)
+            # --- FIN DE AUDITORÍA ---
 
             return cursor.rowcount > 0  # Retorna True si la fila fue actualizada
 
