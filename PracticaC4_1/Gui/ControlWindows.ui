@@ -456,6 +456,9 @@ QHeaderView::section {
     border: 1px solid rgb(53, 53, 79);
 }</string>
               </property>
+              <property name="currentIndex">
+               <number>4</number>
+              </property>
               <widget class="QWidget" name="Inicio">
                <layout class="QVBoxLayout" name="verticalLayout_7">
                 <property name="spacing">
@@ -947,7 +950,7 @@ QPushButton:hover {
                      <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
                      </property>
-                     <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="8,3">
+                     <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="8,2">
                       <property name="spacing">
                        <number>0</number>
                       </property>
@@ -971,7 +974,7 @@ QPushButton:hover {
                         <property name="frameShadow">
                          <enum>QFrame::Raised</enum>
                         </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_19" stretch="4,8">
+                        <layout class="QVBoxLayout" name="verticalLayout_19" stretch="0">
                          <property name="spacing">
                           <number>0</number>
                          </property>
@@ -988,54 +991,190 @@ QPushButton:hover {
                           <number>0</number>
                          </property>
                          <item>
-                          <widget class="QFrame" name="frame_25">
-                           <property name="frameShape">
-                            <enum>QFrame::StyledPanel</enum>
+                          <widget class="QStackedWidget" name="stackedWidget_pagos">
+                           <property name="currentIndex">
+                            <number>0</number>
                            </property>
-                           <property name="frameShadow">
-                            <enum>QFrame::Raised</enum>
-                           </property>
-                           <widget class="QLabel" name="label_12">
-                            <property name="geometry">
-                             <rect>
-                              <x>20</x>
-                              <y>10</y>
-                              <width>49</width>
-                              <height>16</height>
-                             </rect>
-                            </property>
-                            <property name="text">
-                             <string>User:</string>
-                            </property>
+                           <widget class="QWidget" name="pagos_page_consulta">
+                            <layout class="QHBoxLayout" name="horizontalLayout_25">
+                             <property name="spacing">
+                              <number>0</number>
+                             </property>
+                             <property name="leftMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="rightMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="bottomMargin">
+                              <number>0</number>
+                             </property>
+                             <item>
+                              <widget class="QTableWidget" name="tabla_pagos"/>
+                             </item>
+                            </layout>
                            </widget>
-                           <widget class="QLabel" name="label_13">
-                            <property name="geometry">
-                             <rect>
-                              <x>20</x>
-                              <y>50</y>
-                              <width>161</width>
-                              <height>16</height>
-                             </rect>
-                            </property>
-                            <property name="text">
-                             <string>Nombre del alumno:</string>
-                            </property>
+                           <widget class="QWidget" name="pagos_page_formulario">
+                            <layout class="QHBoxLayout" name="horizontalLayout_16">
+                             <property name="spacing">
+                              <number>0</number>
+                             </property>
+                             <property name="leftMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="rightMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="bottomMargin">
+                              <number>0</number>
+                             </property>
+                             <item>
+                              <widget class="QFrame" name="frame_25">
+                               <property name="frameShape">
+                                <enum>QFrame::StyledPanel</enum>
+                               </property>
+                               <property name="frameShadow">
+                                <enum>QFrame::Raised</enum>
+                               </property>
+                               <layout class="QVBoxLayout" name="verticalLayout_20">
+                                <item>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_24" stretch="1,8">
+                                  <property name="spacing">
+                                   <number>1</number>
+                                  </property>
+                                  <item>
+                                   <widget class="QLabel" name="lbl_pagos_user_static">
+                                    <property name="text">
+                                     <string>User:</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QLabel" name="lbl_pagos_user_dinamico">
+                                    <property name="text">
+                                     <string>---</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </item>
+                                <item>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_17">
+                                  <item>
+                                   <widget class="QLabel" name="label_12">
+                                    <property name="text">
+                                     <string>Nombre del alumno:</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QComboBox" name="combo_pagos_alumno"/>
+                                  </item>
+                                 </layout>
+                                </item>
+                                <item>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_23">
+                                  <item>
+                                   <widget class="QLabel" name="label_14">
+                                    <property name="text">
+                                     <string>Tipo de pago:</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QComboBox" name="combo_pagos_tipo"/>
+                                  </item>
+                                 </layout>
+                                </item>
+                                <item>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_20">
+                                  <item>
+                                   <widget class="QLabel" name="label_15">
+                                    <property name="text">
+                                     <string>Monto:</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QLineEdit" name="txt_pagos_monto">
+                                    <property name="readOnly">
+                                     <bool>true</bool>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </item>
+                                <item>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_21">
+                                  <item>
+                                   <widget class="QLabel" name="label_16">
+                                    <property name="text">
+                                     <string>Descuento:</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QComboBox" name="combo_pagos_descuento"/>
+                                  </item>
+                                 </layout>
+                                </item>
+                                <item>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_22">
+                                  <item>
+                                   <widget class="QLabel" name="label_17">
+                                    <property name="text">
+                                     <string>Total a pagar:</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QLineEdit" name="txt_pagos_total">
+                                    <property name="readOnly">
+                                     <bool>true</bool>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </item>
+                                <item>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_18">
+                                  <item>
+                                   <widget class="QLabel" name="label_18">
+                                    <property name="text">
+                                     <string>Estado:</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QComboBox" name="combo_pagos_estado"/>
+                                  </item>
+                                 </layout>
+                                </item>
+                                <item>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_19">
+                                  <item>
+                                   <widget class="QLabel" name="label_13">
+                                    <property name="text">
+                                     <string>Fecha de cobro</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QDateEdit" name="date_pagos_fecha"/>
+                                  </item>
+                                 </layout>
+                                </item>
+                               </layout>
+                              </widget>
+                             </item>
+                            </layout>
                            </widget>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QFrame" name="frame_26">
-                           <property name="frameShape">
-                            <enum>QFrame::StyledPanel</enum>
-                           </property>
-                           <property name="frameShadow">
-                            <enum>QFrame::Raised</enum>
-                           </property>
-                           <layout class="QHBoxLayout" name="horizontalLayout_16">
-                            <item>
-                             <widget class="QTableWidget" name="tableWidget_2"/>
-                            </item>
-                           </layout>
                           </widget>
                          </item>
                         </layout>
@@ -1064,42 +1203,42 @@ QPushButton:hover {
                         </property>
                         <layout class="QVBoxLayout" name="verticalLayout_18">
                          <item>
-                          <widget class="QPushButton" name="pushButton_11">
+                          <widget class="QPushButton" name="btn_pagos_nuevo">
                            <property name="text">
                             <string>Nuevo</string>
                            </property>
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_12">
+                          <widget class="QPushButton" name="btn_pagos_borrar">
                            <property name="text">
                             <string>Borrar</string>
                            </property>
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_13">
+                          <widget class="QPushButton" name="btn_pagos_actualizar">
                            <property name="text">
                             <string>Actualizar</string>
                            </property>
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_15">
+                          <widget class="QPushButton" name="btn_pagos_consultar">
                            <property name="text">
                             <string>Consultar</string>
                            </property>
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_16">
+                          <widget class="QPushButton" name="btn_pagos_cancelar">
                            <property name="text">
                             <string>Cancel</string>
                            </property>
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_14">
+                          <widget class="QPushButton" name="btn_pagos_regresar">
                            <property name="text">
                             <string>Regresar</string>
                            </property>

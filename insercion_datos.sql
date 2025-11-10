@@ -111,3 +111,19 @@ INSERT INTO eAsistencia (CvClase, CvUsuario, FechaAsistencia, Estado) VALUES
 -- Insertamos Evaluaciones (Usuario 3 en Clase 1)
 INSERT INTO tEvaluacion (CvUsuario, CvClase, Nota, Comentarios) VALUES
 (3, 1, 9.5, 'Excelente participación en clase.');
+
+-- -----------------------------------------------------
+-- 5. DATOS PARA PAGOS (NUEVO)
+-- -----------------------------------------------------
+USE bdPracticaC4_1;
+
+INSERT INTO `cTiposPago` (DsTipoPago, Monto) VALUES
+('Inscripción', 500.00),
+('Mensualidad', 300.00),
+('Examen Extraordinario', 150.00);
+
+INSERT INTO `cDescuentos` (DsDescuento, Porcentaje) VALUES
+('Sin Descuento', 0.00),
+('Beca 10%', 0.10),
+('Beca 25%', 0.25),
+('Apoyo 50%', 0.50);

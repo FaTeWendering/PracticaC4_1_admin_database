@@ -392,6 +392,28 @@ CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`tEvaluacion` (
 ENGINE = InnoDB
 COMMENT = 'Evaluaciones y notas de los alumnos en sus clases.';
 
+-- -----------------------------------------------------
+-- Tabla `cTiposPago` (NUEVA)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cTiposPago` (
+  `CvTipoPago` INT NOT NULL AUTO_INCREMENT,
+  `DsTipoPago` VARCHAR(100) NOT NULL COMMENT 'Ej: Inscripción, Mensualidad, Examen Extra.',
+  `Monto` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`CvTipoPago`)
+) ENGINE = InnoDB
+COMMENT = 'Catálogo de tipos de pago con sus montos fijos.';
+
+-- -----------------------------------------------------
+-- Tabla `cDescuentos` (NUEVA)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `bdPracticaC4_1`.`cDescuentos` (
+  `CvDescuento` INT NOT NULL AUTO_INCREMENT,
+  `DsDescuento` VARCHAR(100) NOT NULL COMMENT 'Ej: Sin Descuento, Beca 10%, Apoyo 50%.',
+  `Porcentaje` DECIMAL(5,2) NOT NULL DEFAULT 0 COMMENT 'Ej: 0.10 para 10%, 0.50 para 50%',
+  PRIMARY KEY (`CvDescuento`)
+) ENGINE = InnoDB
+COMMENT = 'Catálogo de descuentos aplicables.';
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

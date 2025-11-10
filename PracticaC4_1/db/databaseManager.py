@@ -174,3 +174,138 @@ class DatabaseManager:
             return False
         finally:
             cursor.close()
+
+    #Pagos
+    def get_pagos_por_usuario(self, cv_user):
+        """Obtiene todos los pagos de un usuario específico (para Alumnos)"""
+        if not self.connection or not self.connection.is_connected():
+            return []
+
+        query = """
+        SELECT 
+            f.CvCobro, f.FechaCobro, f.Tipo, f.Monto, f.Descuento, f.Estado,
+            CONCAT(n.DsNombre, ' ', ap.DsApellid) AS NombreAlumno
+        FROM fCobro f
+        JOIN mUsuario u ON f.CvUsuario = u.CvUser
+        JOIN mDtsPerson dp ON u.CvPerson = dp.CvPerson
+        JOIN cNombre n ON dp.CvNombre = n.CvNombre
+        JOIN cApellid ap ON dp.CvApePat = ap.CvApellid
+        WHERE f.CvUsuario = %s
+        ORDER BY f.FechaCobro DESC;
+        """
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(query, (cv_user))
+            return cursor.fetchall()
+        except Error as e:
+            print(f"Error al obtener pagos por usuario: {e}")
+            return []
+        finally:
+            cursor.close()
+
+    def get_todos_los_pagos(self):
+        """Obtine todos los pagos (para Directores/Admin)"""
+        if not self.connection or not self.connection.is_connected():
+            return []
+        query = """
+        SELECT 
+            f.CvCobro, f.FechaCobro, f.Tipo, f.Monto, f.Descuento, f.Estado,
+            CONCAT(n.DsNombre, ' ', ap.DsApellid) AS NombreAlumno,
+            f.CvUsuario
+        FROM fCobro f
+        JOIN mUsuario u ON f.CvUsuario = u.CvUser
+        JOIN mDtsPerson dp ON u.CvPerson = dp.CvPerson
+        JOIN cNombre n ON dp.CvNombre = n.CvNombre
+        JOIN cApellid ap ON dp.CvApePat = ap.CvApellid
+        ORDER BY f.FechaCobro DESC;
+        """
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(query)
+            return cursor.fetchall()
+        except Error as e:
+            print(f"Error al obtener todos los pagos: {e}")
+            return []
+        finally:
+            cursor.close()
+
+    def get_alumnos_para_combobox(self):
+        """Obtiene todos los alumnos (ID, Nombre) para llenar el combobox"""
+        if not self.connection or not self.connection.is_connected():
+            return []
+        query = """
+            SELECT 
+            u.CvUser,
+            CONCAT(n.DsNombre, ' ', ap.DsApellid, ' ', am.DsApellid) AS NombreCompleto
+        FROM mUsuario u
+        JOIN mDtsPerson dp ON u.CvPerson = dp.CvPerson
+        JOIN cTpPerso tp ON dp.CvTpPerso = tp.CvTpPerson
+        JOIN cNombre n ON dp.CvNombre = n.CvNombre
+        JOIN cApellid ap ON dp.CvApePat = ap.CvApellid
+        JOIN cApellid am ON dp.CvApeMat = am.CvApellid
+        WHERE tp.DsTpPerson = 'Alumno'
+        ORDER BY NombreCompleto;
+        """
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(query)
+            return cursor.fetchall()
+        except Error as e:
+            print(f"Error al obtener la lista de alumnos: {e}")
+            return []
+        finally:
+            cursor.close()
+
+    def add_pago(self, cv_usuario, fecha, tipo, monto, descuento, estado):
+        """Insertar un nuevo registro de pago en fCobro"""
+        if not self.connection or not self.connection.is_connected():
+            return False
+        query = """
+        INSERT INTO fCobro (CvUsuario, FechaCobro, Tipo, Monto, Descuento, Estado)
+        VALUES (%s, %s, %s, %s, %s, %s);
+        """
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(query, (cv_usuario, fecha, tipo, monto, descuento, estado))
+            self.connection.commit()
+            return True
+        except Error as e:
+            print(f"Error al añadir pago {e}")
+            return False
+        finally:
+            cursor.close()
+
+        # (Aquí irían también las funciones 'update_pago' y 'delete_pago', que podemos añadir después)
+
+    def get_tipos_pago(self):
+        """Obtiene todos los tipos de pago (ID, Nombre, Monto) para el ComboBox."""
+        if not self.connection or not self.connection.is_connected():
+            return []
+
+        query = "SELECT CvTipoPago, DsTipoPago, Monto FROM cTiposPago ORDER BY DsTipoPago;"
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(query)
+            return cursor.fetchall()
+        except Error as e:
+            print(f"Error al obtener tipos de pago: {e}")
+            return []
+        finally:
+            cursor.close()
+
+    def get_descuentos(self):
+        """Obtiene todos los descuentos (ID, Nombre, Porcentaje) para el ComboBox."""
+        if not self.connection or not self.connection.is_connected():
+            return []
+
+        query = "SELECT CvDescuento, DsDescuento, Porcentaje FROM cDescuentos ORDER BY Porcentaje;"
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(query)
+            return cursor.fetchall()
+        except Error as e:
+            print(f"Error al obtener descuentos: {e}")
+            return []
+        finally:
+            cursor.close()
+            

@@ -3,8 +3,9 @@ from PyQt6.QtCore import (
     Qt, pyqtSignal, QPropertyAnimation,
     QEasingCurve, QParallelAnimationGroup
 )
-from PyQt6.QtGui import QMouseEvent, QIcon
-from PyQt6.QtWidgets import QDialog, QHeaderView, QLineEdit, QMessageBox
+from PyQt6.QtGui import QMouseEvent, QIcon, QDoubleValidator
+from PyQt6.QtWidgets import QDialog, QHeaderView, QLineEdit, QMessageBox, QTableWidgetItem, QAbstractItemView
+from PyQt6.QtCore import QDate, QLocale
 from .ui_ControlWindows import Ui_Dialog
 
 
@@ -21,6 +22,9 @@ class ControlWindows(QDialog):
         # Propiedades para guardar los datos del usuario actual
         self.current_login = None
         self.current_password = None
+        self.current_puesto = None
+        self.current_cv_user = None
+        self.current_nombre_completo = None
 
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
 
@@ -82,6 +86,7 @@ class ControlWindows(QDialog):
 
         # --- ESTADO INICIAL DE MÓDULOS ---
         self.estado_compras = "navegando"
+        self.estado_actual_pagos = "consultando"
 
         # --- ANIMACIÓN MENÚ PRINCIPAL ---
         self.menu_ancho_desplegado = 220
@@ -106,10 +111,57 @@ class ControlWindows(QDialog):
         self.ui.pushButton_4.clicked.connect(self.mostrar_pagina_cambiarpass)
         self.ui.btn_cerrarsesion.clicked.connect(self.cerrar_sesion)
 
+        try:
+            self.ui.btn_pagos.clicked.connect(self.mostrar_pagina_pagos)
+        except AttributeError as e:
+            print(f"ADVERTENCIA: No se encontró el botón 'btn_pagos' en el menú. {e}")
+
         self.dragging = False
         self.offset = None
 
+        # --- CONEXIONES DEL MÓDULO DE PAGOS ---
+        try:
+            # Conexiones de los botones de acción (CRUD)
+            self.ui.btn_pagos_nuevo.clicked.connect(self.accion_pagos_nuevo)
+            self.ui.btn_pagos_actualizar.clicked.connect(self.accion_pagos_actualizar)
+            self.ui.btn_pagos_borrar.clicked.connect(self.accion_pagos_borrar)
+            self.ui.btn_pagos_consultar.clicked.connect(self.accion_pagos_consultar)
+            self.ui.btn_pagos_cancelar.clicked.connect(self.accion_pagos_cancelar)
+            self.ui.btn_pagos_regresar.clicked.connect(self.accion_pagos_regresar)
+
+            # Conectar señales de los ComboBox
+            self.ui.combo_pagos_tipo.currentIndexChanged.connect(self.actualizar_monto_y_total)
+            self.ui.combo_pagos_descuento.currentIndexChanged.connect(self.actualizar_monto_y_total)
+
+            # Poner validadores a los campos de dinero (para que muestren $0.00)
+            locale = QLocale(QLocale.Language.Spanish, QLocale.Country.Mexico)
+            validator = QDoubleValidator(0.0, 99999.99, 2)
+            validator.setLocale(locale)
+            validator.setNotation(QDoubleValidator.Notation.StandardNotation)
+
+            self.ui.txt_pagos_monto.setValidator(validator)
+            self.ui.txt_pagos_total.setValidator(validator)
+
+        except AttributeError as e:
+            print(f"ADVERTENCIA: No se pudieron conectar los widgets de Pagos. ¿Regeneraste el UI? Error: {e}")
+
     # --- MÓDULO: NAVEGACIÓN DE PÁGINAS ---
+    def mostrar_pagina_pagos(self):
+        try:
+            self.ui.stackedWidget.setCurrentWidget(self.ui.Pagos)
+
+            self.cargar_tabla_pagos()
+
+            self.cargar_combobox_alumnos()
+
+            self.cargar_combobox_pagos_y_descuentos()
+
+            if not self.menu_esta_oculto:
+                self.toggle_menu_main()
+
+            self.accion_pagos_consultar()
+        except AttributeError as e:
+            print(e)
 
     def mostrar_pagina_cambiarpass(self):
         try:
@@ -180,7 +232,7 @@ class ControlWindows(QDialog):
             self.dragging = False
             self.offset = None
 
-    def set_user_info(self, nombre_completo, puesto, genero, login, password):
+    def set_user_info(self, nombre_completo, puesto, genero, login, password, cv_user):
         saludo = "Bienvenido(a)"
         if genero.lower() == 'masculino':
             saludo = "Bienvenido"
@@ -192,6 +244,11 @@ class ControlWindows(QDialog):
 
         self.current_login = login
         self.current_password = password
+        self.current_puesto = puesto
+        self.current_cv_user = cv_user
+        self.current_nombre_completo = nombre_completo
+
+        self.ui.stackedWidget.setCurrentWidget(self.ui.Inicio)
 
     def cerrar_sesion(self):
         self.ui.lbl_bienvenida.setText("Bienvenido(a):")
@@ -370,3 +427,236 @@ class ControlWindows(QDialog):
             self.ui.caracter_especial.setStyleSheet(self.style_crit_error)
         except AttributeError:
             pass
+
+    def configurar_botones_pagos(self, estado):
+        """
+        Implementa las reglas del profesor para habilitar/deshabilitar
+        y cambiar el texto de los botones.
+        """
+        self.estado_actual_pagos = estado
+
+        # Por defecto, obtenemos la fila seleccionada
+        fila_seleccionada = self.ui.tabla_pagos.currentRow()
+
+        if estado == "consultando":
+            self.ui.btn_pagos_nuevo.setText("Nuevo")
+            self.ui.btn_pagos_nuevo.setEnabled(True)
+
+            self.ui.btn_pagos_actualizar.setText("Actualizar")
+            self.ui.btn_pagos_actualizar.setEnabled(fila_seleccionada != -1)  # Activo solo si algo está seleccionado
+
+            self.ui.btn_pagos_borrar.setText("Borrar")
+            self.ui.btn_pagos_borrar.setEnabled(fila_seleccionada != -1)  # Activo solo si algo está seleccionado
+
+            self.ui.btn_pagos_cancelar.setEnabled(False)
+            self.ui.btn_pagos_consultar.setEnabled(False)
+
+        elif estado == "nuevo":
+            self.ui.btn_pagos_nuevo.setText("Guardar")
+            self.ui.btn_pagos_nuevo.setEnabled(True)
+
+            self.ui.btn_pagos_actualizar.setEnabled(False)
+            self.ui.btn_pagos_borrar.setEnabled(False)
+            self.ui.btn_pagos_cancelar.setEnabled(True)
+            self.ui.btn_pagos_consultar.setEnabled(True)
+
+        elif estado == "actualizando":
+            self.ui.btn_pagos_nuevo.setEnabled(False)
+
+            self.ui.btn_pagos_actualizar.setText("Guardar")
+            self.ui.btn_pagos_actualizar.setEnabled(True)
+
+            self.ui.btn_pagos_borrar.setEnabled(False)
+            self.ui.btn_pagos_cancelar.setEnabled(True)
+            self.ui.btn_pagos_consultar.setEnabled(True)
+
+    def cargar_tabla_pagos(self):
+        """Llena la tabla de pagos basándose en los permisos del usuario."""
+        if self.current_puesto == 'Estudiante':
+            datos_pagos = self.db_manager.get_pagos_por_usuario(self.current_cv_user)
+            headers = ["ID Cobro", "Fecha", "Tipo", "Monto", "Descuento", "Estado", "Alumno"]
+        else:
+            datos_pagos = self.db_manager.get_todos_los_pagos()
+            headers = ["ID Cobro", "Fecha", "Tipo", "Monto", "Descuento", "Estado", "Alumno", "ID Usuario"]
+
+        self.ui.tabla_pagos.setColumnCount(len(headers))
+        self.ui.tabla_pagos.setHorizontalHeaderLabels(headers)
+        self.ui.tabla_pagos.setRowCount(len(datos_pagos))
+
+        for row_idx, row_data in enumerate(datos_pagos):
+            for col_idx, col_data in enumerate(row_data):
+                item = QTableWidgetItem(str(col_data))
+                self.ui.tabla_pagos.setItem(row_idx, col_idx, item)
+
+        header = self.ui.tabla_pagos.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.ui.tabla_pagos.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.ui.tabla_pagos.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.ui.tabla_pagos.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+
+        # Conectar la selección de la tabla para habilitar botones
+        self.ui.tabla_pagos.itemSelectionChanged.connect(
+            lambda: self.configurar_botones_pagos("consultando") if self.estado_actual_pagos == "consultando" else None
+        )
+
+    def cargar_combobox_alumnos(self):
+        """Llena el ComboBox de alumnos en el formulario de pagos."""
+        self.ui.combo_pagos_alumno.clear()
+
+        if self.current_puesto == 'Estudiante':
+            self.ui.combo_pagos_alumno.addItem(self.current_nombre_completo, self.current_cv_user)
+            self.ui.combo_pagos_alumno.setEnabled(False)
+        else:
+            self.ui.combo_pagos_alumno.setEnabled(True)
+            alumnos = self.db_manager.get_alumnos_para_combobox()
+            self.ui.combo_pagos_alumno.addItem("Seleccione un alumno...", None)
+            for cv_user, nombre_completo in alumnos:
+                self.ui.combo_pagos_alumno.addItem(nombre_completo, cv_user)
+
+    def cargar_combobox_pagos_y_descuentos(self):
+        """Llena los ComboBox de Tipos de Pago y Descuentos."""
+
+        # Cargar Tipos de Pago
+        self.ui.combo_pagos_tipo.clear()
+        tipos_pago = self.db_manager.get_tipos_pago()
+        self.ui.combo_pagos_tipo.addItem("Seleccione un tipo...", (None, 0.0))  # (ID, Monto)
+        for cv, ds, monto in tipos_pago:
+            self.ui.combo_pagos_tipo.addItem(f"{ds} (${monto})", (cv, monto))
+
+        # Cargar Descuentos
+        self.ui.combo_pagos_descuento.clear()
+        descuentos = self.db_manager.get_descuentos()
+        self.ui.combo_pagos_descuento.addItem("Seleccione descuento...", (None, 0.0))  # (ID, Porcentaje)
+        for cv, ds, porcentaje in descuentos:
+            self.ui.combo_pagos_descuento.addItem(f"{ds} ({porcentaje * 100}%)", (cv, porcentaje))
+
+        # Si el usuario es Estudiante, deshabilitar
+        if self.current_puesto == 'Estudiante':
+            self.ui.combo_pagos_tipo.setEnabled(False)
+            self.ui.combo_pagos_descuento.setEnabled(False)
+        else:
+            self.ui.combo_pagos_tipo.setEnabled(True)
+            self.ui.combo_pagos_descuento.setEnabled(True)
+
+    def actualizar_monto_y_total(self):
+        """Se llama cada vez que cambia un QComboBox. Calcula el total."""
+
+        # 1. Obtener datos de los ComboBox
+        # currentData() devuelve la tupla (ID, Valor) que guardamos
+        tipo_data = self.ui.combo_pagos_tipo.currentData()
+        desc_data = self.ui.combo_pagos_descuento.currentData()
+
+        monto = 0.0
+        porcentaje_desc = 0.0
+
+        if tipo_data and tipo_data[0] is not None:
+            monto = float(tipo_data[1])
+
+        if desc_data and desc_data[0] is not None:
+            porcentaje_desc = float(desc_data[1])
+
+        # 2. Calcular valores
+        monto_descuento = monto * porcentaje_desc
+        total = monto - monto_descuento
+
+        # 3. Mostrar valores en los QLineEdit (formateados como dinero)
+        locale = QLocale(QLocale.Language.Spanish, QLocale.Country.Mexico)
+        self.ui.txt_pagos_monto.setText(locale.toString(monto, 'f', 2))
+        self.ui.txt_pagos_total.setText(locale.toString(total, 'f', 2))
+
+    def limpiar_formulario_pagos(self):
+        """Limpia todos los campos del formulario de pagos."""
+        self.ui.lbl_pagos_user_dinamico.setText(self.current_nombre_completo)
+        self.ui.date_pagos_fecha.setDate(QDate.currentDate())
+        self.ui.combo_pagos_tipo.setCurrentIndex(0)
+        self.ui.combo_pagos_descuento.setCurrentIndex(0)
+        self.ui.txt_pagos_monto.clear()
+        self.ui.txt_pagos_total.clear()
+        self.ui.combo_pagos_estado.setCurrentIndex(0)
+        if self.current_puesto != 'Estudiante':
+            self.ui.combo_pagos_alumno.setCurrentIndex(0)
+        self.current_pago_id_edicion = None
+
+    def accion_pagos_nuevo(self):
+        if self.estado_actual_pagos == "nuevo":
+            self.guardar_nuevo_pago()
+        else:
+            self.ui.stackedWidget_pagos.setCurrentWidget(self.ui.pagos_page_formulario)
+            self.limpiar_formulario_pagos()
+            self.configurar_botones_pagos("nuevo")
+
+    def accion_pagos_actualizar(self):
+        if self.estado_actual_pagos == "actualizando":
+            self.guardar_actualizacion_pago()
+        else:
+            QMessageBox.information(self, "Pendiente",
+                                    "La lógica de 'Actualizar' (cargar datos) aún no está implementada.")
+            # self.ui.stackedWidget_pagos.setCurrentWidget(self.ui.pagos_page_formulario)
+            # self.configurar_botones_pagos("actualizando")
+
+    def accion_pagos_borrar(self):
+        QMessageBox.information(self, "Pendiente", "La lógica de 'Borrar' aún no está implementada.")
+
+    def accion_pagos_consultar(self):
+        """Vuelve a la vista de tabla (consulta)."""
+        self.ui.stackedWidget_pagos.setCurrentWidget(self.ui.pagos_page_consulta)
+        self.configurar_botones_pagos("consultando")
+        self.cargar_tabla_pagos()
+
+    def accion_pagos_cancelar(self):
+        """Cancela la acción de 'Nuevo' o 'Actualizar' y vuelve a la consulta."""
+        self.accion_pagos_consultar()
+
+    def accion_pagos_regresar(self):
+        """Regresa al menú de inicio del stackedWidget principal."""
+        self.ui.stackedWidget.setCurrentWidget(self.ui.Inicio)
+        if self.menu_esta_oculto:
+            self.toggle_menu_main()
+
+    def guardar_nuevo_pago(self):
+        """Valida los datos del formulario y llama al db_manager para INSERTAR."""
+        # 1. Obtener datos del formulario
+        cv_usuario = self.ui.combo_pagos_alumno.currentData()
+        fecha = self.ui.date_pagos_fecha.date().toString("yyyy-MM-dd")
+
+        tipo_data = self.ui.combo_pagos_tipo.currentData()
+        desc_data = self.ui.combo_pagos_descuento.currentData()
+
+        estado = self.ui.combo_pagos_estado.currentText()
+
+        # 2. Validar datos
+        if not cv_usuario:
+            QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un alumno.")
+            return
+        if not tipo_data or tipo_data[0] is None:
+            QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un Tipo de Pago.")
+            return
+        if not desc_data or desc_data[0] is None:
+            QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un Descuento.")
+            return
+
+        # 3. Obtener valores finales para la BD
+        # El 'Tipo' que guardamos es el string (ej. "Mensualidad")
+        # El 'Monto' y 'Descuento' son los valores numéricos calculados
+
+        tipo_str = self.ui.combo_pagos_tipo.currentText().split(" (")[0]  # Obtiene "Mensualidad"
+        monto_final = float(tipo_data[1])
+        porcentaje_final = float(desc_data[1])
+        descuento_calculado = monto_final * porcentaje_final  # Guardamos el monto del descuento
+
+        # 4. Enviar a la Base de Datos
+        exito = self.db_manager.add_pago(
+            cv_usuario=cv_usuario,
+            fecha=fecha,
+            tipo=tipo_str,
+            monto=monto_final,
+            descuento=descuento_calculado,
+            estado=estado
+        )
+
+        # 5. Informar al usuario y recargar
+        if exito:
+            QMessageBox.information(self, "Éxito", "Pago registrado correctamente.")
+            self.accion_pagos_consultar()  # Volver a la tabla
+        else:
+            QMessageBox.critical(self, "Error de BD", "No se pudo registrar el pago en la base de datos.")

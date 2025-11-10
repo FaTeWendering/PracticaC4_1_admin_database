@@ -6,7 +6,7 @@ from .ui_LoginWindows import Ui_Dialog
 
 
 class LoginWindow(QWidget):
-    login_exitoso = pyqtSignal(str, str, str, str, str)
+    login_exitoso = pyqtSignal(str, str, str, str, str, int)
     def __init__(self, db_manager):
         super().__init__()
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
@@ -144,5 +144,5 @@ class LoginWindow(QWidget):
 
         self.db_manager.registrar_acceso(login, True, "Login exitoso")
 
-        self.login_exitoso.emit(nombre_completo, puesto_str, genero_str, login, password)
+        self.login_exitoso.emit(nombre_completo, puesto_str, genero_str, login, password, cv_user)
         self.hide()
