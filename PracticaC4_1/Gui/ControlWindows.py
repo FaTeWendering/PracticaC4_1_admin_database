@@ -89,6 +89,9 @@ class ControlWindows(QDialog):
         self.estado_compras = "navegando"
         self.estado_actual_pagos = "consultando"
         self.estado_actual_personas = "consultando"
+        self.estado_actual_catalogos = "consultando"
+        self.estado_actual_asistencia = "consultando"
+        self.estado_actual_evaluaciones = "consultando"
 
         # --- ANIMACIÓN MENÚ PRINCIPAL ---
         self.menu_ancho_desplegado = 220
@@ -113,6 +116,9 @@ class ControlWindows(QDialog):
         self.ui.pushButton_4.clicked.connect(self.mostrar_pagina_cambiarpass)
         self.ui.btn_cerrarsesion.clicked.connect(self.cerrar_sesion)
         self.ui.btn_Personas.clicked.connect(self.mostrar_pagina_personas)
+        self.ui.btn_catalogos.clicked.connect(self.mostrar_pagina_catalogos)
+        self.ui.btn_asistencia.clicked.connect(self.mostrar_pagina_asistencia)
+        self.ui.btn_evaluaciones.clicked.connect(self.mostrar_pagina_evaluaciones)
 
         try:
             self.ui.btn_pagos.clicked.connect(self.mostrar_pagina_pagos)
@@ -155,7 +161,7 @@ class ControlWindows(QDialog):
             # Botones de acción
             self.ui.btn_per_nuevo.clicked.connect(self.accion_personas_nuevo)
             self.ui.btn_per_actualizar.clicked.connect(self.accion_personas_actualizar)  # <-- CONECTADO
-            # self.ui.btn_per_borrar.clicked.connect(self.accion_personas_borrar) # <-- (Aún pendiente)
+            self.ui.btn_per_borrar.clicked.connect(self.accion_personas_borrar) # <-- (Aún pendiente)
             self.ui.btn_per_consultar.clicked.connect(self.accion_personas_consultar)
             self.ui.btn_per_cancelar.clicked.connect(self.accion_personas_cancelar)
             self.ui.btn_per_regresar.clicked.connect(self.accion_personas_regresar)
@@ -177,6 +183,40 @@ class ControlWindows(QDialog):
 
         except AttributeError as e:
             print(f"ADVERTENCIA: No se pudieron conectar los widgets de Personas. ¿Regeneraste el UI? Error: {e}")
+            # --- CONEXIONES MÓDULO CATÁLOGOS (Lógica de botones) ---
+        try:
+            self.ui.btn_cata_nuevo.clicked.connect(self.accion_catalogos_nuevo)
+            self.ui.btn_cata_actualizar.clicked.connect(self.accion_catalogos_actualizar)
+            self.ui.btn_cata_borrar.clicked.connect(self.accion_catalogos_borrar)
+            self.ui.btn_cata_consultar.clicked.connect(self.accion_catalogos_consultar)
+            # Cancelar y Consultar/Regresar hacen lo mismo (volver al estado "consultando")
+            self.ui.btn_cata_cancelar.clicked.connect(self.accion_catalogos_consultar)
+            # Reutilizamos la función de regresar de los otros módulos
+            self.ui.btn_cata_regresar.clicked.connect(self.accion_pagos_regresar)
+        except AttributeError as e:
+            print(f"ADVERTENCIA: No se pudieron conectar los widgets de Catálogos. {e}")
+
+        # --- CONEXIONES MÓDULO ASISTENCIA (Lógica de botones) ---
+        try:
+            self.ui.btn_asis_nuevo.clicked.connect(self.accion_asistencia_nuevo)
+            self.ui.btn_asis_actualizar.clicked.connect(self.accion_asistencia_actualizar)
+            self.ui.btn_asis_borrar.clicked.connect(self.accion_asistencia_borrar)
+            self.ui.btn_asis_consultar.clicked.connect(self.accion_asistencia_consultar)
+            self.ui.btn_asis_cancelar.clicked.connect(self.accion_asistencia_consultar)
+            self.ui.btn_asis_regresar.clicked.connect(self.accion_pagos_regresar)
+        except AttributeError as e:
+            print(f"ADVERTENCIA: No se pudieron conectar los widgets de Asistencia. {e}")
+
+        # --- CONEXIONES MÓDULO EVALUACIONES (Lógica de botones) ---
+        try:
+            self.ui.btn_eva_nuevo.clicked.connect(self.accion_evaluaciones_nuevo)
+            self.ui.btn_eva_actualizar.clicked.connect(self.accion_evaluaciones_actualizar)
+            self.ui.btn_eva_borrar.clicked.connect(self.accion_evaluaciones_borrar)
+            self.ui.btn_eva_consultar.clicked.connect(self.accion_evaluaciones_consultar)
+            self.ui.btn_eva_cancelar.clicked.connect(self.accion_evaluaciones_consultar)
+            self.ui.btn_eva_regresar.clicked.connect(self.accion_pagos_regresar)
+        except AttributeError as e:
+            print(f"ADVERTENCIA: No se pudieron conectar los widgets de Evaluaciones. {e}")
 
 
     # --- MÓDULO: NAVEGACIÓN DE PÁGINAS ---
@@ -224,6 +264,48 @@ class ControlWindows(QDialog):
             self.ui.btn_cancel_pass.clicked.connect(self.limpiar_campos_password)
         except AttributeError as e:
             print(f"Error: La pagina (CambiarPass) no existe. creela en Qt Designer. {e}")
+
+    def mostrar_pagina_catalogos(self):
+        try:
+            self.ui.stackedWidget.setCurrentWidget(self.ui.Catalogos)
+            self.db_manager.registrar_acceso(
+                self.current_login, True, "AUDITORIA APP: Acceso al modulo de Catalogos"
+            )
+            # --- AÑADIDO: Configurar estado inicial ---
+            self.accion_catalogos_consultar()
+            if not self.menu_esta_oculto:
+                self.toggle_menu_main()
+            # --- FIN DE AÑADIDO ---
+        except AttributeError as e:
+            print(f"Error: La pagina(Catalogos) no existe. creela en Qt Designer. {e}")
+
+    def mostrar_pagina_asistencia(self):
+        try:
+            self.ui.stackedWidget.setCurrentWidget(self.ui.Asistencia)
+            self.db_manager.registrar_acceso(
+                self.current_login, True, "Auditoria APP: Acceso al modulo de Asistencia"
+            )
+            # --- AÑADIDO: Configurar estado inicial ---
+            self.accion_asistencia_consultar()
+            if not self.menu_esta_oculto:
+                self.toggle_menu_main()
+            # --- FIN DE AÑADIDO ---
+        except AttributeError as e:
+            print(f"Error: La pagina (asistencias) no existe. creela en Qt Designer. {e}")
+
+    def mostrar_pagina_evaluaciones(self):
+        try:
+            self.ui.stackedWidget.setCurrentWidget(self.ui.Evaluaciones)
+            self.db_manager.registrar_acceso(
+                self.current_login, True, "Auditoria APP: Acceso al modulo de Evaluaciones"
+            )
+            # --- AÑADIDO: Configurar estado inicial ---
+            self.accion_evaluaciones_consultar()
+            if not self.menu_esta_oculto:
+                self.toggle_menu_main()
+            # --- FIN DE AÑADIDO ---
+        except AttributeError as e:
+            print(f"Erro: La pagina (evaluaciones) no existe. creela en Qt Designer. {e}")
 
     # --- MÓDULO: ANIMACIONES DE MENÚS ---
 
@@ -1305,12 +1387,12 @@ class ControlWindows(QDialog):
                                      "No se pudieron recuperar los datos completos de esta persona.")
                 return
 
+            self.limpiar_formulario_personas()
             # 4. Guardar los IDs que estamos editando
-            self.current_persona_id_edicion = cv_user_a_editar  # CvUser
-            self.current_person_id_edicion = datos['CvPerson']  # CvPerson (para mDtsPerson)
 
-            # 5. Cargar los datos en el formulario
-            self.limpiar_formulario_personas()  # Limpia y resetea
+            self.current_persona_id_edicion = cv_user_a_editar  # CvUser
+            self.current_person_id_edicion = datos['CvPerson']
+
 
             self.ui.txt_per_nombre.setText(datos['DsNombre'])
             self.ui.txt_per_apepat.setText(datos['ApePat'])
@@ -1419,3 +1501,303 @@ class ControlWindows(QDialog):
             self.accion_personas_consultar()  # Volver a la tabla
         else:
             QMessageBox.critical(self, "Error de BD", "Error en la transacción. No se pudo actualizar el usuario.")
+
+    def accion_personas_borrar(self):
+        """
+        Toma la fila seleccionada de la tabla de personas,
+        pide confirmación y la elimina.
+        """
+        # 1. Obtener la fila seleccionada
+        fila = self.ui.tabla_personas.currentRow()
+        if fila == -1:
+            QMessageBox.warning(self, "Error", "No has seleccionado ninguna persona para borrar.")
+            return
+
+        try:
+            # 2. Obtener el ID de Usuario (CvUser) y el Nombre
+            cv_user_item = self.ui.tabla_personas.item(fila, 0)
+            cv_user_a_borrar = int(cv_user_item.text())
+
+            nombre_item = self.ui.tabla_personas.item(fila, 2)  # Columna "Nombre Completo"
+            nombre_a_borrar = nombre_item.text()
+
+            # Seguridad: No permitas que el usuario se borre a sí mismo
+            if cv_user_a_borrar == self.current_cv_user:
+                QMessageBox.critical(self, "Acción denegada", "No puedes eliminar tu propia cuenta de usuario.")
+                return
+
+            # 3. Pedir confirmación al usuario (Regla de seguridad)
+            confirmacion = QMessageBox.question(self, "Confirmar Eliminación",
+                                                f"¿Estás seguro de que deseas eliminar permanentemente a:\n\n{nombre_a_borrar} (ID: {cv_user_a_borrar})?\n\nEsta acción también eliminará todos sus pagos, asistencias y evaluaciones asociadas.",
+                                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+
+            # 4. Si el usuario confirma
+            if confirmacion == QMessageBox.StandardButton.Yes:
+                # 5. Llamar a la BD para eliminar
+                exito = self.db_manager.delete_persona_y_usuario(cv_user_a_borrar, self.current_login)
+
+                if exito:
+                    QMessageBox.information(self, "Éxito", "El usuario ha sido eliminado correctamente.")
+                    self.cargar_tabla_personas()  # Recargar la tabla
+                else:
+                    QMessageBox.critical(self, "Error de BD",
+                                         "No se pudo eliminar el usuario. Revise la consola para más detalles.")
+
+        except Exception as e:
+            print(f"Error al borrar persona: {e}")
+            QMessageBox.critical(self, "Error", "No se pudo obtener el ID de la persona a borrar.")
+
+    # --- AÑADIDO: Funciones para los nuevos módulos ---
+
+    def _configurar_botones_crud(self, estado, btn_nuevo, btn_actualizar, btn_borrar, btn_cancelar, btn_consultar):
+        """
+        Función genérica para configurar botones CRUD según las reglas de las imágenes.
+
+        """
+        # Estado "Consultando" (Inicial)
+        if estado == "consultando":
+            btn_nuevo.setText("Nuevo")
+            btn_nuevo.setEnabled(True)
+            btn_actualizar.setText("Actualizar")
+            # Para esta demo simple, los habilitamos.
+            # En una implementación real, dependerían de la selección de la tabla.
+            btn_actualizar.setEnabled(True)
+            btn_borrar.setText("Borrar")
+            btn_borrar.setEnabled(True)
+            btn_cancelar.setEnabled(False)
+            btn_consultar.setEnabled(True)
+
+        # Estado "Nuevo" (Clic en Nuevo)
+        elif estado == "nuevo":
+            btn_nuevo.setText("Guardar")  #
+            btn_nuevo.setEnabled(True)
+            btn_actualizar.setEnabled(False)  #
+            btn_borrar.setEnabled(False)  #
+            btn_cancelar.setEnabled(True)
+            btn_consultar.setEnabled(True)
+
+        # Estado "Actualizando" (Clic en Actualizar)
+        elif estado == "actualizando":
+            btn_nuevo.setEnabled(False)  #
+            btn_actualizar.setText("Guardar")  #
+            btn_actualizar.setEnabled(True)
+            btn_borrar.setEnabled(False)  #
+            btn_cancelar.setEnabled(True)
+            btn_consultar.setEnabled(True)
+
+        # Simulación de "Borrando"
+        elif estado == "borrando":
+            btn_nuevo.setEnabled(False)  #
+            btn_actualizar.setEnabled(False)  #
+            btn_borrar.setText("Borrar")  # El texto no cambia
+            btn_borrar.setEnabled(True)
+            btn_cancelar.setEnabled(True)
+            btn_consultar.setEnabled(True)
+
+    # =================================================================
+    # === MÓDULO: CATÁLOGOS (Lógica de botones)
+    # =================================================================
+
+    def accion_catalogos_nuevo(self):
+        # Si ya estamos en "nuevo", el botón es "Guardar".
+        if self.estado_actual_catalogos == "nuevo":
+
+            # --- LÍNEA AÑADIDA ---
+            self.db_manager.registrar_acceso(self.current_login, True,
+                                             "AUDITORIA BD: Se ha agregado un registro de un catalogo")
+            # --- FIN DE LÍNEA AÑADIDA ---
+
+            QMessageBox.information(self, "Simulación", "Acción 'Guardar Nuevo Catálogo' ejecutada (simulación).")
+            self.accion_catalogos_consultar()  # Volvemos al inicio
+        else:
+            self.estado_actual_catalogos = "nuevo"
+            # self.ui.stackedWidget_2.setCurrentWidget(self.ui.page_2) # page_2 es el formulario
+            QMessageBox.information(self, "Simulación", "Mostrando formulario para 'Nuevo Catálogo' (simulación).")
+            self._configurar_botones_crud(
+                self.estado_actual_catalogos,
+                self.ui.btn_cata_nuevo, self.ui.btn_cata_actualizar, self.ui.btn_cata_borrar,
+                self.ui.btn_cata_cancelar, self.ui.btn_cata_consultar
+            )
+
+    def accion_catalogos_actualizar(self):
+        # Si estamos "actualizando", el botón es "Guardar".
+        if self.estado_actual_catalogos == "actualizando":
+
+            # --- LÍNEA AÑADIDA ---
+            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha actualizado un registro de un catalogo")
+            # --- FIN DE LÍNEA AÑADIDA ---
+
+            QMessageBox.information(self, "Simulación",
+                                    "Acción 'Guardar Actualización Catálogo' ejecutada (simulación).")
+            self.accion_catalogos_consultar()  # Volvemos al inicio
+        else:
+            self.estado_actual_catalogos = "actualizando"
+            # self.ui.stackedWidget_2.setCurrentWidget(self.ui.page_2)
+            QMessageBox.information(self, "Simulación", "Cargando datos para 'Actualizar Catálogo' (simulación).")
+            self._configurar_botones_crud(
+                self.estado_actual_catalogos,
+                self.ui.btn_cata_nuevo, self.ui.btn_cata_actualizar, self.ui.btn_cata_borrar,
+                self.ui.btn_cata_cancelar, self.ui.btn_cata_consultar
+            )
+
+    def accion_catalogos_borrar(self):
+        # Para cumplir la regla, deshabilitamos otros botones
+        self.estado_actual_catalogos = "borrando"
+        self._configurar_botones_crud(
+            self.estado_actual_catalogos,
+            self.ui.btn_cata_nuevo, self.ui.btn_cata_actualizar, self.ui.btn_cata_borrar,
+            self.ui.btn_cata_cancelar, self.ui.btn_cata_consultar
+        )
+
+        # --- LÍNEA AÑADIDA ---
+        self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha eliminado un registro de un catalogo")
+        # --- FIN DE LÍNEA AÑADIDA ---
+
+        QMessageBox.information(self, "Simulación",
+                                "Acción 'Borrar Catálogo' ejecutada (simulación). \nPresione Cancelar o Consultar para resetear.")
+
+    def accion_catalogos_consultar(self):
+        self.estado_actual_catalogos = "consultando"
+        # Aquí iría el código para volver a la página de la tabla
+        # self.ui.stackedWidget_2.setCurrentWidget(self.ui.page) # page es la tabla
+        self._configurar_botones_crud(
+            self.estado_actual_catalogos,
+            self.ui.btn_cata_nuevo, self.ui.btn_cata_actualizar, self.ui.btn_cata_borrar,
+            self.ui.btn_cata_cancelar, self.ui.btn_cata_consultar
+        )
+
+    # =================================================================
+    # === MÓDULO: ASISTENCIA (Lógica de botones)
+    # =================================================================
+
+    def accion_asistencia_nuevo(self):
+        if self.estado_actual_asistencia == "nuevo":
+
+            # --- LÍNEA AÑADIDA ---
+            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha agregado una asistencia")
+            # --- FIN DE LÍNEA AÑADIDA ---
+
+            QMessageBox.information(self, "Simulación", "Acción 'Guardar Nueva Asistencia' ejecutada (simulación).")
+            self.accion_asistencia_consultar()
+        else:
+            self.estado_actual_asistencia = "nuevo"
+            # self.ui.stackedWidget_3.setCurrentWidget(self.ui.page_4)
+            QMessageBox.information(self, "Simulación", "Mostrando formulario para 'Nueva Asistencia' (simulación).")
+            self._configurar_botones_crud(
+                self.estado_actual_asistencia,
+                self.ui.btn_asis_nuevo, self.ui.btn_asis_actualizar, self.ui.btn_asis_borrar,
+                self.ui.btn_asis_cancelar, self.ui.btn_asis_consultar
+            )
+
+    def accion_asistencia_actualizar(self):
+        if self.estado_actual_asistencia == "actualizando":
+
+            # --- LÍNEA AÑADIDA ---
+            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha actualizado una asistencia")
+            # --- FIN DE LÍNEA AÑADIDA ---
+
+            QMessageBox.information(self, "Simulación",
+                                    "Acción 'Guardar Actualización Asistencia' ejecutada (simulación).")
+            self.accion_asistencia_consultar()
+        else:
+            self.estado_actual_asistencia = "actualizando"
+            # self.ui.stackedWidget_3.setCurrentWidget(self.ui.page_4)
+            QMessageBox.information(self, "Simulación", "Cargando datos para 'Actualizar Asistencia' (simulación).")
+            self._configurar_botones_crud(
+                self.estado_actual_asistencia,
+                self.ui.btn_asis_nuevo, self.ui.btn_asis_actualizar, self.ui.btn_asis_borrar,
+                self.ui.btn_asis_cancelar, self.ui.btn_asis_consultar
+            )
+
+    def accion_asistencia_borrar(self):
+        self.estado_actual_asistencia = "borrando"
+        self._configurar_botones_crud(
+            self.estado_actual_asistencia,
+            self.ui.btn_asis_nuevo, self.ui.btn_asis_actualizar, self.ui.btn_asis_borrar,
+            self.ui.btn_asis_cancelar, self.ui.btn_asis_consultar
+        )
+
+        # --- LÍNEA AÑADIDA ---
+        self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha eliminado una asistencia")
+        # --- FIN DE LÍNEA AÑADIDA ---
+
+        QMessageBox.information(self, "Simulación",
+                                "Acción 'Borrar Asistencia' ejecutada (simulación). \nPresione Cancelar o Consultar para resetear.")
+
+    def accion_asistencia_consultar(self):
+        self.estado_actual_asistencia = "consultando"
+        # self.ui.stackedWidget_3.setCurrentWidget(self.ui.page_3)
+        self._configurar_botones_crud(
+            self.estado_actual_asistencia,
+            self.ui.btn_asis_nuevo, self.ui.btn_asis_actualizar, self.ui.btn_asis_borrar,
+            self.ui.btn_asis_cancelar, self.ui.btn_asis_consultar
+        )
+
+    # =================================================================
+    # === MÓDULO: EVALUACIONES (Lógica de botones)
+    # =================================================================
+
+    def accion_evaluaciones_nuevo(self):
+        if self.estado_actual_evaluaciones == "nuevo":
+
+            # --- LÍNEA AÑADIDA ---
+            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha agregado una evaluacion")
+            # --- FIN DE LÍNEA AÑADIDA ---
+
+            QMessageBox.information(self, "Simulación", "Acción 'Guardar Nueva Evaluación' ejecutada (simulación).")
+            self.accion_evaluaciones_consultar()
+        else:
+            self.estado_actual_evaluaciones = "nuevo"
+            # self.ui.stackedWidget_4.setCurrentWidget(self.ui.page_6)
+            QMessageBox.information(self, "Simulación", "Mostrando formulario para 'Nueva Evaluación' (simulación).")
+            self._configurar_botones_crud(
+                self.estado_actual_evaluaciones,
+                self.ui.btn_eva_nuevo, self.ui.btn_eva_actualizar, self.ui.btn_eva_borrar,
+                self.ui.btn_eva_cancelar, self.ui.btn_eva_consultar
+            )
+
+    def accion_evaluaciones_actualizar(self):
+        if self.estado_actual_evaluaciones == "actualizando":
+
+            # --- LÍNEA AÑADIDA ---
+            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha actualizado una evaluacion")
+            # --- FIN DE LÍNEA AÑADIDA ---
+
+            QMessageBox.information(self, "Simulación",
+                                    "Acción 'Guardar Actualización Evaluación' ejecutada (simulación).")
+            self.accion_evaluaciones_consultar()
+        else:
+            self.estado_actual_evaluaciones = "actualizando"
+            # self.ui.stackedWidget_4.setCurrentWidget(self.ui.page_6)
+            QMessageBox.information(self, "Simulación", "Cargando datos para 'Actualizar Evaluación' (simulación).")
+            self._configurar_botones_crud(
+                self.estado_actual_evaluaciones,
+                self.ui.btn_eva_nuevo, self.ui.btn_eva_actualizar, self.ui.btn_eva_borrar,
+                self.ui.btn_eva_cancelar, self.ui.btn_eva_consultar
+            )
+
+    def accion_evaluaciones_borrar(self):
+        self.estado_actual_evaluaciones = "borrando"
+        self._configurar_botones_crud(
+            self.estado_actual_evaluaciones,
+            self.ui.btn_eva_nuevo, self.ui.btn_eva_actualizar, self.ui.btn_eva_borrar,
+            self.ui.btn_eva_cancelar, self.ui.btn_eva_consultar
+        )
+
+        # --- LÍNEA AÑADIDA ---
+        self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se a eliminado una evaluacion")
+        # --- FIN DE LÍNEA AÑADIDA ---
+
+        QMessageBox.information(self, "Simulación",
+                                "Acción 'Borrar Evaluación' ejecutada (simulación). \nPresione Cancelar o Consultar para resetear.")
+
+    def accion_evaluaciones_consultar(self):
+        self.estado_actual_evaluaciones = "consultando"
+        # self.ui.stackedWidget_4.setCurrentWidget(self.ui.page_5)
+        self._configurar_botones_crud(
+            self.estado_actual_evaluaciones,
+            self.ui.btn_eva_nuevo, self.ui.btn_eva_actualizar, self.ui.btn_eva_borrar,
+            self.ui.btn_eva_cancelar, self.ui.btn_eva_consultar
+        )
+
+    # --- FIN DE AÑADIDO ---

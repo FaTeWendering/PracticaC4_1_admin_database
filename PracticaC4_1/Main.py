@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QApplication
 from db.databaseManager import DatabaseManager
 from Gui.LoginWindows import LoginWindow
 from Gui.ControlWindows import ControlWindows
+import logging
 
 class MainApplication():
     def __init__(self):
@@ -31,6 +32,12 @@ class MainApplication():
         self.login_win.show()
 
 if __name__ == '__main__':
+    logging.basicConfig(
+        filename='system_errors.log',  # El nombre de tu archivo .log
+        level=logging.ERROR,  # Solo registra ERRORES o peores (CRITICAL)
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        encoding='utf-8'  # Para asegurar que acepte acentos
+    )
     app = QApplication(sys.argv)
     main_app = MainApplication()
     main_app.run()

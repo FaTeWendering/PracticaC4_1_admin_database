@@ -1,6 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
-
+import logging
 
 class DatabaseManager:
 
@@ -26,6 +26,7 @@ class DatabaseManager:
                 print("Conexión exitosa a MariaDB")
         except Error as e:
             print(f"Error al conectar con MariaDB: {e}")
+            logging.error(f"Error al conectar con MariaDB: {e}")
             self.connection = None
 
     def validar_usuario(self, login, password):
@@ -64,6 +65,7 @@ class DatabaseManager:
 
         except Error as e:
             print(f"ERROR EN LA CONSULTA DE VALIDACIÓN: {e}")
+            logging.error(f"Error en validar_usuario (Login: {login}): {e}")
             return None
         finally:
             cursor.close()
@@ -93,6 +95,7 @@ class DatabaseManager:
 
         except Error as e:
             print(f"ERROR AL ACTUALIZAR: {e}")
+            logging.error(f"Error en actualizar_estado_cuenta (CvUser: {cv_user}): {e}")
             self.connection.rollback()
             return False
         finally:
@@ -101,6 +104,7 @@ class DatabaseManager:
     def registrar_acceso(self, usuario_intento, exito, detalle_evento):
         if not self.connection or not self.connection.is_connected():
             print("Error no hay conexion en la base de datos para la bitacora.")
+            logging.critical("FALLO TOTAL: No se pudo conectar a la BD para registrar en bitácora.")
             return False
 
         cursor = self.connection.cursor()
@@ -120,6 +124,7 @@ class DatabaseManager:
             return True
         except Error as e:
             print(f"Error en mostrar en bitacora: {e}")
+            logging.error(f"Error en registrar_acceso (Usuario: {usuario_intento}): {e}")
             self.connection.rollback()
             return False
         finally:
@@ -672,6 +677,57 @@ class DatabaseManager:
 
         except Error as e:
             print(f"Error en la transacción de actualizar persona: {e}")
+            self.connection.rollback()  # ¡Deshacer todo si algo falla!
+            return False
+        finally:
+            cursor.close()
+
+    def delete_persona_y_usuario(self, cv_user_a_borrar, admin_login):
+        """
+        Elimina una Persona y su Usuario asociado usando ON DELETE CASCADE.
+        """
+        if not self.connection or not self.connection.is_connected():
+            return False
+
+        cursor = self.connection.cursor()
+
+        # Necesitamos el CvPerson y el Login ANTES de borrar, para la auditoría
+        cv_person = None
+        login_borrado = None
+        try:
+            cursor.execute("SELECT CvPerson, Login FROM mUsuario WHERE CvUser = %s", (cv_user_a_borrar,))
+            resultado = cursor.fetchone()
+            if resultado:
+                cv_person = resultado[0]
+                login_borrado = resultado[1]
+            else:
+                # Si no hay usuario, no hay nada que borrar
+                print(f"No se encontró CvPerson para CvUser {cv_user_a_borrar}")
+                return False
+        except Error as e:
+            print(f"Error al buscar CvPerson: {e}")
+            return False
+
+        try:
+            # ¡Iniciamos una transacción!
+            self.connection.start_transaction()
+
+            # 1. Borrar de mDtsPerson
+            # Gracias a "ON DELETE CASCADE", mUsuario se borrará automáticamente.
+            query_person = "DELETE FROM mDtsPerson WHERE CvPerson = %s;"
+            cursor.execute(query_person, (cv_person,))
+
+            # 2. Confirmar el borrado
+            self.connection.commit()
+
+            # 3. Registrar en Bitácora
+            detalle_evento = f"AUDITORIA BD: DELETE en mDtsPerson (ID: {cv_person}) y mUsuario (Login: {login_borrado})"
+            self.registrar_acceso(admin_login, True, detalle_evento)
+
+            return True
+
+        except Error as e:
+            print(f"Error en la transacción de eliminar persona: {e}")
             self.connection.rollback()  # ¡Deshacer todo si algo falla!
             return False
         finally:
