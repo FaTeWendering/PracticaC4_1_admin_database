@@ -6,6 +6,7 @@ from PyQt6.QtCore import (
 from PyQt6.QtGui import QMouseEvent, QIcon, QDoubleValidator
 from PyQt6.QtWidgets import QDialog, QHeaderView, QLineEdit, QMessageBox, QTableWidgetItem, QAbstractItemView, QCompleter
 from PyQt6.QtCore import QDate, QLocale, Qt
+from datetime import date
 from .ui_ControlWindows import Ui_Dialog
 
 
@@ -87,6 +88,7 @@ class ControlWindows(QDialog):
         # --- ESTADO INICIAL DE MÓDULOS ---
         self.estado_compras = "navegando"
         self.estado_actual_pagos = "consultando"
+        self.estado_actual_personas = "consultando"
 
         # --- ANIMACIÓN MENÚ PRINCIPAL ---
         self.menu_ancho_desplegado = 220
@@ -110,6 +112,7 @@ class ControlWindows(QDialog):
         # --- CONEXIONES DE BOTONES DEL MENÚ PRINCIPAL ---
         self.ui.pushButton_4.clicked.connect(self.mostrar_pagina_cambiarpass)
         self.ui.btn_cerrarsesion.clicked.connect(self.cerrar_sesion)
+        self.ui.btn_Personas.clicked.connect(self.mostrar_pagina_personas)
 
         try:
             self.ui.btn_pagos.clicked.connect(self.mostrar_pagina_pagos)
@@ -147,6 +150,34 @@ class ControlWindows(QDialog):
 
         except AttributeError as e:
             print(f"ADVERTENCIA: No se pudieron conectar los widgets de Pagos. ¿Regeneraste el UI? Error: {e}")
+
+        try:
+            # Botones de acción
+            self.ui.btn_per_nuevo.clicked.connect(self.accion_personas_nuevo)
+            self.ui.btn_per_actualizar.clicked.connect(self.accion_personas_actualizar)  # <-- CONECTADO
+            # self.ui.btn_per_borrar.clicked.connect(self.accion_personas_borrar) # <-- (Aún pendiente)
+            self.ui.btn_per_consultar.clicked.connect(self.accion_personas_consultar)
+            self.ui.btn_per_cancelar.clicked.connect(self.accion_personas_cancelar)
+            self.ui.btn_per_regresar.clicked.connect(self.accion_personas_regresar)
+
+            # Filtros de la tabla
+            self.ui.filtro_personas_nombre.textChanged.connect(self.actualizar_filtros_tabla_personas)
+            self.ui.filtro_personas_tipo.currentIndexChanged.connect(self.actualizar_filtros_tabla_personas)
+
+            # --- AÑADE ESTA CONEXIÓN ---
+            # Conectar la selección de la tabla para habilitar/deshabilitar botones
+            self.ui.tabla_personas.itemSelectionChanged.connect(
+                lambda: self.configurar_botones_personas(
+                    "consultando") if self.estado_actual_personas == "consultando" else None
+            )
+            # --- FIN DE LA CONEXIÓN ---
+
+            # Llenar ComboBox de estado (el único estático)
+            self.ui.combo_per_edocta.addItems(["True", "False"])
+
+        except AttributeError as e:
+            print(f"ADVERTENCIA: No se pudieron conectar los widgets de Personas. ¿Regeneraste el UI? Error: {e}")
+
 
     # --- MÓDULO: NAVEGACIÓN DE PÁGINAS ---
     def mostrar_pagina_pagos(self):
@@ -925,3 +956,466 @@ class ControlWindows(QDialog):
             self.accion_pagos_consultar()  # Volver a la tabla
         else:
             QMessageBox.critical(self, "Error de BD", "No se pudo actualizar el pago.")
+
+    # =================================================================
+    # === MÓDULO: GESTIÓN DE PERSONAS (USUARIOS)
+    # =================================================================
+
+    def mostrar_pagina_personas(self):
+        """
+        Se llama al presionar el botón 'Personas' del menú principal.
+        Prepara la página de gestión de personas.
+        """
+        try:
+            # 1. Registrar auditoría de aplicación
+            self.db_manager.registrar_acceso(
+                self.current_login, True, "AUDITORIA APP: Acceso al módulo de Personas"
+            )
+
+            # 2. Cambiar a la página de personas
+            self.ui.stackedWidget.setCurrentWidget(self.ui.Personas)
+
+            # 3. Cargar los QComboBox del formulario (Género, Puesto, etc.)
+            self.cargar_combobox_catalogos_personas()
+
+            # 4. Cargar el QComboBox del filtro de la tabla
+            self.cargar_combobox_filtro_tipo_persona()
+
+            # 5. Ocultar el menú lateral
+            if not self.menu_esta_oculto:
+                self.toggle_menu_main()
+
+            # 6. Poner en estado de consulta (mostrar tabla)
+            self.accion_personas_consultar()
+
+        except AttributeError as e:
+            print(f"Error crítico al mostrar 'page_personas'. Revisa el nombre en Qt Designer. Error: {e}")
+
+    def cargar_combobox_catalogos_personas(self):
+        """
+        Llena todos los QComboBox del formulario de Personas
+        con datos de la base de datos.
+        """
+        # --- Llenar ComboBox de Género ---
+        self.ui.combo_per_genero.clear()
+        self.ui.combo_per_genero.addItem("Seleccione...", None)
+        generos = self.db_manager.get_generos()
+        for cv, ds in generos:
+            self.ui.combo_per_genero.addItem(ds, cv)  # Guarda el ID (CvGenero)
+
+        # --- Llenar ComboBox de Puesto ---
+        self.ui.combo_per_puesto.clear()
+        self.ui.combo_per_puesto.addItem("Seleccione...", None)
+        puestos = self.db_manager.get_puestos()
+        for cv, ds in puestos:
+            self.ui.combo_per_puesto.addItem(ds, cv)  # Guarda el ID (CvPuesto)
+
+        # --- Llenar ComboBox de Tipo de Persona ---
+        self.ui.combo_per_tipopersona.clear()
+        self.ui.combo_per_tipopersona.addItem("Seleccione...", None)
+        tipos = self.db_manager.get_tipos_persona()
+        for cv, ds in tipos:
+            self.ui.combo_per_tipopersona.addItem(ds, cv)  # Guarda el ID (CvTpPerson)
+
+    def cargar_combobox_filtro_tipo_persona(self):
+        """Llena el ComboBox de filtro de la tabla de personas."""
+        self.ui.filtro_personas_tipo.clear()
+        self.ui.filtro_personas_tipo.addItem("Todos")
+        # Obtenemos los datos frescos de la BD
+        tipos = self.db_manager.get_tipos_persona()
+        for cv, ds in tipos:
+            self.ui.filtro_personas_tipo.addItem(ds)
+
+    def cargar_tabla_personas(self):
+        """Llena la tabla de consulta de personas."""
+        datos_personas = self.db_manager.get_all_personas_info()
+
+        # Definir los headers basados en la consulta
+        headers = ["ID Usuario", "Login", "Nombre Completo", "Tipo", "Puesto", "E-mail", "Telefono", "EdoCta"]
+
+        self.ui.tabla_personas.setColumnCount(len(headers))
+        self.ui.tabla_personas.setHorizontalHeaderLabels(headers)
+        self.ui.tabla_personas.setRowCount(len(datos_personas))
+
+        for row_idx, row_data in enumerate(datos_personas):
+            for col_idx, col_data in enumerate(row_data):
+                item = QTableWidgetItem(str(col_data))
+                self.ui.tabla_personas.setItem(row_idx, col_idx, item)
+
+        # Configurar la apariencia de la tabla
+        header = self.ui.tabla_personas.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.ui.tabla_personas.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.ui.tabla_personas.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.ui.tabla_personas.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+
+        # Conectar la selección de la tabla para habilitar botones (si es necesario en el futuro)
+        # self.ui.tabla_personas.itemSelectionChanged.connect(...)
+
+    def limpiar_formulario_personas(self):
+        """Limpia todos los campos del formulario de Personas."""
+        self.ui.lbl_per_user_dinamico.setText(self.current_nombre_completo)  # Asegúrate que el label se llame así
+
+        # Limpiar QLineEdit
+        self.ui.txt_per_nombre.clear()
+        self.ui.txt_per_apepat.clear()
+        self.ui.txt_per_apemat.clear()
+        self.ui.txt_per_email.clear()
+        self.ui.txt_per_telefono.clear()
+        self.ui.txt_per_login.clear()
+        self.ui.txt_per_password.clear()
+
+        # Resetear QDateEdit
+        self.ui.date_per_fecnac.setDate(QDate(2000, 1, 1))
+        self.ui.date_per_fecini.setDate(QDate.currentDate())
+        self.ui.date_per_fecven.setDate(QDate.currentDate().addYears(1))
+
+        # Resetear QComboBox
+        self.ui.combo_per_genero.setCurrentIndex(0)
+        self.ui.combo_per_puesto.setCurrentIndex(0)
+        self.ui.combo_per_tipopersona.setCurrentIndex(0)
+        self.ui.combo_per_edocta.setCurrentIndex(0)  # "True"
+
+        # (Guardamos el ID del usuario que se está editando. None si es nuevo)
+        self.current_persona_id_edicion = None
+
+    def configurar_botones_personas(self, estado):
+        """Gestiona los botones del módulo de Personas."""
+
+        self.estado_actual_personas = estado  # <-- ¡Esta línea es crucial!
+        fila_seleccionada = self.ui.tabla_personas.currentRow()
+
+        if estado == "consultando":
+            self.ui.btn_per_nuevo.setText("Nuevo")
+            self.ui.btn_per_nuevo.setEnabled(True)
+            self.ui.btn_per_actualizar.setText("Actualizar")
+            self.ui.btn_per_actualizar.setEnabled(fila_seleccionada != -1)
+            self.ui.btn_per_borrar.setText("Borrar")
+            self.ui.btn_per_borrar.setEnabled(fila_seleccionada != -1)  # Habilitar/deshabilitar
+            self.ui.btn_per_cancelar.setEnabled(False)
+            self.ui.btn_per_consultar.setEnabled(True)
+
+        elif estado == "nuevo":
+            self.ui.btn_per_nuevo.setText("Guardar")  # "Nuevo" se convierte en "Guardar"
+            self.ui.btn_per_nuevo.setEnabled(True)
+            self.ui.btn_per_actualizar.setText("Actualizar")  # "Actualizar" se deshabilita
+            self.ui.btn_per_actualizar.setEnabled(False)
+            self.ui.btn_per_borrar.setEnabled(False)
+            self.ui.btn_per_cancelar.setEnabled(True)
+            self.ui.btn_per_consultar.setEnabled(True)
+
+        elif estado == "actualizando":
+            self.ui.btn_per_nuevo.setText("Nuevo")  # "Nuevo" se deshabilita
+            self.ui.btn_per_nuevo.setEnabled(False)
+            self.ui.btn_per_actualizar.setText("Guardar")  # "Actualizar" se convierte en "Guardar"
+            self.ui.btn_per_actualizar.setEnabled(True)
+            self.ui.btn_per_borrar.setEnabled(False)
+            self.ui.btn_per_cancelar.setEnabled(True)
+            self.ui.btn_per_consultar.setEnabled(True)
+
+    def actualizar_filtros_tabla_personas(self):
+        """Filtra la tabla de personas en vivo."""
+        filtro_nombre = self.ui.filtro_personas_nombre.text().lower()
+        filtro_tipo = self.ui.filtro_personas_tipo.currentText()
+
+        # Columnas fijas de la consulta 'get_all_personas_info'
+        col_nombre_idx = 2
+        col_tipo_idx = 3
+
+        for fila in range(self.ui.tabla_personas.rowCount()):
+            item_nombre = self.ui.tabla_personas.item(fila, col_nombre_idx).text().lower()
+            item_tipo = self.ui.tabla_personas.item(fila, col_tipo_idx).text()
+
+            match_nombre = filtro_nombre in item_nombre
+            match_tipo = (filtro_tipo == "Todos" or filtro_tipo == item_tipo)
+
+            if match_nombre and match_tipo:
+                self.ui.tabla_personas.setRowHidden(fila, False)
+            else:
+                self.ui.tabla_personas.setRowHidden(fila, True)
+
+    # --- ACCIONES DE BOTONES (Personas) ---
+
+    def accion_personas_nuevo(self):
+        if self.estado_actual_personas == "nuevo":  # Debería ser estado_actual_personas
+            self.guardar_nueva_persona()
+        else:
+            self.ui.stackedWidget_personas.setCurrentWidget(self.ui.personas_page_formulario)
+            self.limpiar_formulario_personas()
+            self.configurar_botones_personas("nuevo")
+
+    def accion_personas_consultar(self):
+        """Vuelve a la tabla, limpia filtros y recarga."""
+        self.ui.stackedWidget_personas.setCurrentWidget(self.ui.personas_page_consulta)
+        self.configurar_botones_personas("consultando")
+        self.ui.filtro_personas_nombre.clear()
+        self.ui.filtro_personas_tipo.setCurrentIndex(0)
+        self.cargar_tabla_personas()
+
+    def accion_personas_cancelar(self):
+        """Cancela 'Nuevo' o 'Actualizar' y vuelve a la tabla."""
+        self.accion_personas_consultar()
+
+    def accion_personas_regresar(self):
+        """Regresa al menú de inicio."""
+        self.ui.stackedWidget.setCurrentWidget(self.ui.Inicio)
+        if self.menu_esta_oculto:
+            self.toggle_menu_main()
+
+    def guardar_nueva_persona(self):
+        """
+        Valida el formulario de Personas y llama al db_manager
+        para INSERTAR en mDtsPerson y mUsuario.
+        """
+        # 1. Validar que los campos de texto no estén vacíos
+        campos_texto = {
+            "Nombre": self.ui.txt_per_nombre,
+            "Apellido Paterno": self.ui.txt_per_apepat,
+            "Apellido Materno": self.ui.txt_per_apemat,
+            "E-mail": self.ui.txt_per_email,
+            "Login": self.ui.txt_per_login,
+            "Password": self.ui.txt_per_password
+        }
+        for nombre_campo, widget in campos_texto.items():
+            if not widget.text().strip():
+                QMessageBox.warning(self, "Datos incompletos", f"El campo '{nombre_campo}' no puede estar vacío.")
+                return
+
+        # 2. Validar que los QComboBox hayan seleccionado algo
+        if self.ui.combo_per_genero.currentIndex() <= 0:
+            QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un 'Género'.")
+            return
+        if self.ui.combo_per_puesto.currentIndex() <= 0:
+            QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un 'Puesto'.")
+            return
+        if self.ui.combo_per_tipopersona.currentIndex() <= 0:
+            QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un 'Tipo de Persona'.")
+            return
+
+        # 3. Validar que el Login no exista ya
+        login_nuevo = self.ui.txt_per_login.text().strip()
+        if self.db_manager.check_login_exists(login_nuevo):
+            QMessageBox.warning(self, "Error", f"El login '{login_nuevo}' ya está en uso. Por favor, elija otro.")
+            return
+
+        # 4. Recopilar todos los datos en diccionarios
+        fecha_nac = self.ui.date_per_fecnac.date()
+        edad_calculada = self._calcular_edad(fecha_nac)
+
+        datos_persona = {
+            "Nombre": self.ui.txt_per_nombre.text().strip(),
+            "ApePat": self.ui.txt_per_apepat.text().strip(),
+            "ApeMat": self.ui.txt_per_apemat.text().strip(),
+            "FecNac": fecha_nac.toString("yyyy-MM-dd"),
+            "E_mail": self.ui.txt_per_email.text().strip(),
+            "Telefono": self.ui.txt_per_telefono.text().strip(),
+            "CvGenero": self.ui.combo_per_genero.currentData(),
+            "CvPuesto": self.ui.combo_per_puesto.currentData(),
+            "CvTpPerso": self.ui.combo_per_tipopersona.currentData(),
+            "Edad": edad_calculada,  # <-- AÑADIDO (Tu idea)
+            "RedSoc": "N/A"  # <-- AÑADIDO (El campo que faltaba)
+        }
+
+        datos_usuario = {
+            "Login": login_nuevo,
+            "Password": self.ui.txt_per_password.text(),  # ¡Recuerda hashear esto en un proyecto real!
+            "FecIni": self.ui.date_per_fecini.date().toString("yyyy-MM-dd"),
+            "FecVen": self.ui.date_per_fecven.date().toString("yyyy-MM-dd"),
+            "EdoCta": self.ui.combo_per_edocta.currentText()
+        }
+
+        # 5. Enviar a la Base de Datos
+        exito = self.db_manager.add_persona_y_usuario(
+            datos_persona,
+            datos_usuario,
+            self.current_login
+        )
+
+        # 6. Informar y recargar
+        if exito:
+            QMessageBox.information(self, "Éxito", f"Usuario '{login_nuevo}' creado correctamente.")
+            self.accion_personas_consultar()  # Volver a la tabla
+        else:
+            QMessageBox.critical(self, "Error de BD", "Error en la transacción. No se pudo crear el usuario.")
+
+    def _calcular_edad(self, fecha_nacimiento):
+        """Calcula la edad basada en un objeto QDate."""
+        hoy = date.today()
+        # Convierte QDate a date de datetime
+        nac = fecha_nacimiento.toPyDate()
+
+        # Calcula la edad
+        edad = hoy.year - nac.year - ((hoy.month, hoy.day) < (nac.month, nac.day))
+        return edad
+
+    def _set_combo_by_data(self, combobox, data_to_find):
+        """
+        Función auxiliar: Busca un ID (almacenado en currentData)
+        en un QComboBox y lo selecciona.
+        """
+        if data_to_find is None:
+            combobox.setCurrentIndex(0)
+            return
+
+        # findData busca en los datos (IDs) guardados, no en el texto visible
+        index = combobox.findData(data_to_find)
+
+        if index != -1:  # Si lo encontró
+            combobox.setCurrentIndex(index)
+        else:
+            # Si no encuentra el ID (ej. ID 0 o nulo), pone "Seleccione..."
+            combobox.setCurrentIndex(0)
+
+    def accion_personas_actualizar(self):
+        """
+        Lógica del botón 'Actualizar/Guardar':
+        - Si estamos consultando: Carga los datos en el formulario.
+        - Si estamos actualizando: Guarda los datos en la BD.
+        """
+        if self.estado_actual_personas == "actualizando":
+            # Si el estado es "actualizando", el botón dice "Guardar".
+            self.guardar_actualizacion_persona()  # Llamamos a la nueva función de guardado
+        else:
+            # Si el estado es "consultando", el botón dice "Actualizar".
+            self.cargar_datos_persona_en_formulario()
+
+    def cargar_datos_persona_en_formulario(self):
+        """
+        Toma la fila seleccionada de la tabla de personas,
+        obtiene todos sus datos de la BD y llena el formulario.
+        """
+        # 1. Obtener la fila seleccionada
+        fila = self.ui.tabla_personas.currentRow()
+        if fila == -1:
+            # Esta comprobación ya la hace 'configurar_botones_personas',
+            # pero es una doble seguridad.
+            QMessageBox.warning(self, "Error", "No has seleccionado ninguna persona para actualizar.")
+            return
+
+        try:
+            # 2. Obtener el ID de Usuario (CvUser) de la tabla (Columna 0)
+            cv_user_item = self.ui.tabla_personas.item(fila, 0)
+            cv_user_a_editar = int(cv_user_item.text())
+
+            # 3. Llamar a la BD para obtener TODOS los datos
+            datos = self.db_manager.get_persona_info_by_id(cv_user_a_editar)
+
+            if not datos:
+                QMessageBox.critical(self, "Error de BD",
+                                     "No se pudieron recuperar los datos completos de esta persona.")
+                return
+
+            # 4. Guardar los IDs que estamos editando
+            self.current_persona_id_edicion = cv_user_a_editar  # CvUser
+            self.current_person_id_edicion = datos['CvPerson']  # CvPerson (para mDtsPerson)
+
+            # 5. Cargar los datos en el formulario
+            self.limpiar_formulario_personas()  # Limpia y resetea
+
+            self.ui.txt_per_nombre.setText(datos['DsNombre'])
+            self.ui.txt_per_apepat.setText(datos['ApePat'])
+            self.ui.txt_per_apemat.setText(datos['ApeMat'])
+            self.ui.txt_per_email.setText(datos['E_mail'])
+            self.ui.txt_per_telefono.setText(datos['Telefono'])
+            self.ui.txt_per_login.setText(datos['Login'])
+            self.ui.txt_per_password.setText(datos['Password'])
+
+            # Seleccionar ComboBoxes usando el ID que guardamos
+            self._set_combo_by_data(self.ui.combo_per_genero, datos['CvGenero'])
+            self._set_combo_by_data(self.ui.combo_per_puesto, datos['CvPuesto'])
+            self._set_combo_by_data(self.ui.combo_per_tipopersona, datos['CvTpPerso'])
+            self.ui.combo_per_edocta.setCurrentText(datos['EdoCta'])
+
+            # Cargar las fechas
+            self.ui.date_per_fecnac.setDate(QDate.fromString(str(datos['FecNac']), "yyyy-MM-dd"))
+            self.ui.date_per_fecini.setDate(QDate.fromString(str(datos['FecIni']), "yyyy-MM-dd"))
+            self.ui.date_per_fecven.setDate(QDate.fromString(str(datos['FecVen']), "yyyy-MM-dd"))
+
+            # 6. Cambiar de vista y de estado
+            self.ui.stackedWidget_personas.setCurrentWidget(self.ui.personas_page_formulario)
+            self.configurar_botones_personas("actualizando")
+
+        except Exception as e:
+            print(f"Error al leer los datos de la tabla: {e}")
+            QMessageBox.critical(self, "Error", "No se pudieron cargar los datos de la fila seleccionada.")
+
+    def guardar_actualizacion_persona(self):
+        """Valida y guarda los datos de una persona MODIFICADA."""
+
+        # 1. Obtener los IDs que estamos editando
+        cv_user = self.current_persona_id_edicion
+        cv_person = self.current_person_id_edicion
+
+        if cv_user is None or cv_person is None:
+            QMessageBox.critical(self, "Error", "Se perdió la referencia del usuario a editar. Acción cancelada.")
+            return
+
+        # 2. Validar campos (igual que en "Nuevo")
+        campos_texto = {
+            "Nombre": self.ui.txt_per_nombre,
+            "Apellido Paterno": self.ui.txt_per_apepat,
+            "Apellido Materno": self.ui.txt_per_apemat,
+            "E-mail": self.ui.txt_per_email,
+            "Login": self.ui.txt_per_login,
+            "Password": self.ui.txt_per_password
+        }
+        for nombre_campo, widget in campos_texto.items():
+            if not widget.text().strip():
+                QMessageBox.warning(self, "Datos incompletos", f"El campo '{nombre_campo}' no puede estar vacío.")
+                return
+        if self.ui.combo_per_genero.currentIndex() <= 0:
+            QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un 'Género'.")
+            return
+        if self.ui.combo_per_puesto.currentIndex() <= 0:
+            QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un 'Puesto'.")
+            return
+        if self.ui.combo_per_tipopersona.currentIndex() <= 0:
+            QMessageBox.warning(self, "Datos incompletos", "Debe seleccionar un 'Tipo de Persona'.")
+            return
+
+        # 3. Validar que el Login no exista (EXCLUYENDO al usuario actual)
+        login_nuevo = self.ui.txt_per_login.text().strip()
+        if self.db_manager.check_login_exists(login_nuevo, current_user_id=cv_user):
+            QMessageBox.warning(self, "Error",
+                                f"El login '{login_nuevo}' ya está en uso por otro usuario. Por favor, elija otro.")
+            return
+
+        # 4. Recopilar todos los datos (igual que en "Nuevo")
+        fecha_nac = self.ui.date_per_fecnac.date()
+        edad_calculada = self._calcular_edad(fecha_nac)
+        datos_persona = {
+            "Nombre": self.ui.txt_per_nombre.text().strip(),
+            "ApePat": self.ui.txt_per_apepat.text().strip(),
+            "ApeMat": self.ui.txt_per_apemat.text().strip(),
+            "FecNac": fecha_nac.toString("yyyy-MM-dd"),
+            "E_mail": self.ui.txt_per_email.text().strip(),
+            "Telefono": self.ui.txt_per_telefono.text().strip(),
+            "CvGenero": self.ui.combo_per_genero.currentData(),
+            "CvPuesto": self.ui.combo_per_puesto.currentData(),
+            "CvTpPerso": self.ui.combo_per_tipopersona.currentData(),
+            "Edad": edad_calculada,
+            "RedSoc": "N/A"  # Mantenemos este valor por defecto
+        }
+
+        datos_usuario = {
+            "Login": login_nuevo,
+            "Password": self.ui.txt_per_password.text(),
+            "FecIni": self.ui.date_per_fecini.date().toString("yyyy-MM-dd"),
+            "FecVen": self.ui.date_per_fecven.date().toString("yyyy-MM-dd"),
+            "EdoCta": self.ui.combo_per_edocta.currentText()
+        }
+
+        # 5. Enviar a la Base de Datos (¡Llamamos a UPDATE!)
+        exito = self.db_manager.update_persona_y_usuario(
+            cv_user, cv_person,
+            datos_persona,
+            datos_usuario,
+            self.current_login
+        )
+
+        # 6. Informar y recargar
+        if exito:
+            QMessageBox.information(self, "Éxito", f"Usuario '{login_nuevo}' actualizado correctamente.")
+            self.accion_personas_consultar()  # Volver a la tabla
+        else:
+            QMessageBox.critical(self, "Error de BD", "Error en la transacción. No se pudo actualizar el usuario.")
