@@ -35,24 +35,24 @@ class DatabaseManager:
 
         cursor = self.connection.cursor()
         query = """
-            SELECT
-                u.CvUser, u.EdoCta, u.FecIni, u.FecVen,
-                n.DsNombre, 
-                ap.DsApellid, 
-                am.DsApellid,
-                p.DsPuesto,
-                g.DsGenero
-            FROM
-                mUsuario u
-            JOIN mDtsPerson dp ON u.CvPerson = dp.CvPerson
-            JOIN cNombre n ON dp.CvNombre = n.CvNombre
-            JOIN cApellid ap ON dp.CvApePat = ap.CvApellid
-            JOIN cApellid am ON dp.CvApeMat = am.CvApellid
-            LEFT JOIN cPuesto p ON dp.CvPuesto = p.CvPuesto
-            LEFT JOIN cGenero g ON dp.CvGenero = g.CvGenero
-            WHERE
-                u.Login = %s AND u.Password = %s;
-        """
+                    SELECT
+                        u.CvUser, u.EdoCta, u.FecIni, u.FecVen,
+                        n.DsNombre, 
+                        ap.DsApellid, 
+                        am.DsApellid,
+                        p.DsPuesto,
+                        g.DsGenero
+                    FROM
+                        mUsuario u
+                    JOIN mDtsPerson dp ON u.CvPerson = dp.CvPerson
+                    JOIN cNombre n ON dp.CvNombre = n.CvNombre
+                    JOIN cApellid ap ON dp.CvApePat = ap.CvApellid
+                    JOIN cApellid am ON dp.CvApeMat = am.CvApellid
+                    LEFT JOIN cPuesto p ON dp.CvPuesto = p.CvPuesto
+                    LEFT JOIN cGenero g ON dp.CvGenero = g.CvGenero
+                    WHERE
+                        BINARY u.Login = %s AND BINARY u.Password = %s;
+                """
 
         try:
             cursor.execute(query, (login, password))
@@ -101,31 +101,32 @@ class DatabaseManager:
         finally:
             cursor.close()
 
-    def registrar_acceso(self, usuario_intento, exito, detalle_evento):
+    def registrar_acceso(self, usuario_intento, exito, detalle_evento, ip_address="192.168.0.225"):
+        """Registra eventos de auditoría con la IP."""
         if not self.connection or not self.connection.is_connected():
             print("Error no hay conexion en la base de datos para la bitacora.")
-            logging.critical("FALLO TOTAL: No se pudo conectar a la BD para registrar en bitácora.")
             return False
 
         cursor = self.connection.cursor()
 
+        # Actualizamos el query para incluir la IP
         query = """
         INSERT INTO bitacora_accesos
-            (usuario_intento, fecha_hora, exito, detalle_evento)
+            (usuario_intento, direccion_ip, fecha_hora, exito, detalle_evento)
         VALUES
-            (%s, NOW(), %s, %s);"""
+            (%s, %s, NOW(), %s, %s);"""
 
         try:
-            datos = (usuario_intento, exito, detalle_evento)
+            # Pasamos la IP a la tupla de datos
+            datos = (usuario_intento, ip_address, exito, detalle_evento)
             cursor.execute(query, datos)
 
             self.connection.commit()
-            print(f"Registro en la bitacora guardado: {usuario_intento}, {detalle_evento}")
+            # print(f"Log guardado: {usuario_intento} ({ip_address}) - {detalle_evento}")
             return True
         except Error as e:
             print(f"Error en mostrar en bitacora: {e}")
-            logging.error(f"Error en registrar_acceso (Usuario: {usuario_intento}): {e}")
-            self.connection.rollback()
+            # No hacemos rollback aquí porque esto suele ser una operación aislada
             return False
         finally:
             cursor.close()
@@ -730,6 +731,49 @@ class DatabaseManager:
             print(f"Error en la transacción de eliminar persona: {e}")
             self.connection.rollback()  # ¡Deshacer todo si algo falla!
             return False
+        finally:
+            cursor.close()
+
+    def registrar_error(self, mensaje_error, modulo, usuario_activo="Desconocido", ip_address="192.168.0.225"):
+        """Guarda un error técnico en la tabla mErrores."""
+        if not self.connection or not self.connection.is_connected():
+            print(f"Fallo crítico: No se pudo guardar el error en BD: {mensaje_error}")
+            return False
+
+        cursor = self.connection.cursor()
+        query = """
+            INSERT INTO mErrores (mensaje_error, modulo, fecha_hora, usuario_activo, direccion_ip)
+            VALUES (%s, %s, NOW(), %s, %s);
+        """
+        try:
+            cursor.execute(query, (str(mensaje_error), modulo, usuario_activo, ip_address))
+            self.connection.commit()
+            return True
+        except Error as e:
+            print(f"Error al registrar en mErrores: {e}")
+            return False
+        finally:
+            cursor.close()
+
+    def get_catalogo_dinamico(self, nombre_tabla, col_id, col_desc):
+        """
+        Consulta dinámica para llenar cualquier catálogo simple.
+        Ej: SELECT CvNombre, DsNombre FROM cNombre;
+        """
+        if not self.connection or not self.connection.is_connected():
+            return []
+
+        # Construimos la query usando los nombres de tabla/columnas
+        # (Es seguro porque estos nombres vendrán de nuestro código interno, no del usuario)
+        query = f"SELECT {col_id}, {col_desc} FROM {nombre_tabla} ORDER BY {col_desc};"
+
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(query)
+            return cursor.fetchall()
+        except Error as e:
+            print(f"Error al obtener catálogo dinámico ({nombre_tabla}): {e}")
+            return []
         finally:
             cursor.close()
 

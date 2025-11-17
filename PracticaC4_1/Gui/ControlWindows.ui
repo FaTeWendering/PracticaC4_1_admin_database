@@ -468,7 +468,7 @@ QPushButton:hover {
 }</string>
               </property>
               <property name="currentIndex">
-               <number>5</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="Inicio">
                <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -720,6 +720,18 @@ QPushButton:hover {
                                <property name="frameShadow">
                                 <enum>QFrame::Raised</enum>
                                </property>
+                               <layout class="QHBoxLayout" name="horizontalLayout_44">
+                                <item>
+                                 <widget class="QLabel" name="label_39">
+                                  <property name="text">
+                                   <string>Seleccione el catalogo</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item>
+                                 <widget class="QComboBox" name="combo_catalogo_seleccion"/>
+                                </item>
+                               </layout>
                               </widget>
                              </item>
                              <item>
@@ -732,7 +744,7 @@ QPushButton:hover {
                                </property>
                                <layout class="QHBoxLayout" name="horizontalLayout_36">
                                 <item>
-                                 <widget class="QTableWidget" name="tableWidget"/>
+                                 <widget class="QTableWidget" name="tabla_catalogos"/>
                                 </item>
                                </layout>
                               </widget>
@@ -1122,8 +1134,8 @@ QPushButton:hover {
                                     <rect>
                                      <x>0</x>
                                      <y>0</y>
-                                     <width>468</width>
-                                     <height>329</height>
+                                     <width>478</width>
+                                     <height>327</height>
                                     </rect>
                                    </property>
                                    <layout class="QHBoxLayout" name="horizontalLayout_31">
@@ -2245,6 +2257,9 @@ QPushButton:hover {
                          </property>
                          <item>
                           <widget class="QStackedWidget" name="stackedWidget_4">
+                           <property name="currentIndex">
+                            <number>1</number>
+                           </property>
                            <widget class="QWidget" name="page_5">
                             <layout class="QVBoxLayout" name="verticalLayout_30" stretch="1,8">
                              <property name="spacing">

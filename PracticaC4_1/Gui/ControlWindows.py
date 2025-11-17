@@ -1,12 +1,13 @@
 import re
 from PyQt6.QtCore import (
-    Qt, pyqtSignal, QPropertyAnimation,
+    pyqtSignal, QPropertyAnimation,
     QEasingCurve, QParallelAnimationGroup
 )
 from PyQt6.QtGui import QMouseEvent, QIcon, QDoubleValidator
 from PyQt6.QtWidgets import QDialog, QHeaderView, QLineEdit, QMessageBox, QTableWidgetItem, QAbstractItemView, QCompleter
 from PyQt6.QtCore import QDate, QLocale, Qt
 from datetime import date
+import socket
 from .ui_ControlWindows import Ui_Dialog
 
 
@@ -53,7 +54,7 @@ class ControlWindows(QDialog):
         # --- CONFIGURACIÓN DE BOTONES DE OJO (CAMBIAR PASS) ---
         try:
             # Reusa la ruta del ícono de LoginWindows
-            ruta_icono = "Gui\\../../Imagenes/eye_on_see_show_view_vision_watch_icon_123215.png"
+            ruta_icono = "Gui/../../Imagenes/eye_on_see_show_view_vision_watch_icon_123215.png"
             eye_icono = QIcon(ruta_icono)
 
             # Conectamos las señales 'textChanged' para la validación en vivo
@@ -224,8 +225,14 @@ class ControlWindows(QDialog):
         try:
             self.ui.stackedWidget.setCurrentWidget(self.ui.Pagos)
 
+            try:
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+            except:
+                ip_address = "127.0.0.1"
+
             self.db_manager.registrar_acceso(
-                self.current_login, True, "AUDITORIA APP: Acceso al módulo de Pagos"
+                self.current_login, True, "AUDITORIA APP: Acceso al módulo de Pagos", ip_address
             )
 
             self.cargar_tabla_pagos()
@@ -242,14 +249,23 @@ class ControlWindows(QDialog):
             self.accion_pagos_consultar()
         except AttributeError as e:
             print(e)
+        except Exception as e:
+            print(e)
+            # LOG DE SISTEMA GENÉRICO
+            self.db_manager.registrar_error(f"Error general en Pagos: {e}", "Navegación", self.current_login)
 
     def mostrar_pagina_cambiarpass(self):
         try:
             # Asumiendo que se llama 'page_7'
             self.ui.stackedWidget.setCurrentWidget(self.ui.Cambiarpass)
+            try:
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+            except:
+                ip_address = "127.0.0.1"
 
             self.db_manager.registrar_acceso(
-                self.current_login, True, "AUDITORIA APP: Acceso al módulo CambiarPass"
+                self.current_login, True, "AUDITORIA APP: Acceso al módulo CambiarPass", ip_address
             )
 
             self.limpiar_campos_password()
@@ -264,26 +280,60 @@ class ControlWindows(QDialog):
             self.ui.btn_cancel_pass.clicked.connect(self.limpiar_campos_password)
         except AttributeError as e:
             print(f"Error: La pagina (CambiarPass) no existe. creela en Qt Designer. {e}")
+        except Exception as e:
+            print(e)
+            # LOG DE SISTEMA GENÉRICO
+            self.db_manager.registrar_error(f"Error general en cambiarpass: {e}", "Navegación", self.current_login)
 
     def mostrar_pagina_catalogos(self):
         try:
             self.ui.stackedWidget.setCurrentWidget(self.ui.Catalogos)
+
+            # 1. Cargar la lista y configuración
+            self.cargar_lista_de_catalogos()
+            try:
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+            except:
+                ip_address = "127.0.0.1"
+
+            # --- NUEVA CONEXIÓN ---
+            # Desconectamos primero por si acaso (evita duplicados)
+            try:
+                self.ui.combo_catalogo_seleccion.currentIndexChanged.disconnect()
+            except:
+                pass
+            # Conectamos: Al cambiar el combo -> Cargar la tabla
+            self.ui.combo_catalogo_seleccion.currentIndexChanged.connect(self.cargar_tabla_catalogos)
+            # ----------------------
+
+            # 2. Auditoría
             self.db_manager.registrar_acceso(
-                self.current_login, True, "AUDITORIA APP: Acceso al modulo de Catalogos"
+                self.current_login, True, "AUDITORIA APP: Acceso al modulo de Catalogos", ip_address
             )
-            # --- AÑADIDO: Configurar estado inicial ---
+
+            # 3. Cargar la tabla inicial (el primer ítem del combo)
+            self.cargar_tabla_catalogos()
+
             self.accion_catalogos_consultar()
             if not self.menu_esta_oculto:
                 self.toggle_menu_main()
-            # --- FIN DE AÑADIDO ---
+
         except AttributeError as e:
-            print(f"Error: La pagina(Catalogos) no existe. creela en Qt Designer. {e}")
+            print(f"Error: Falta widgets en Catalogos. {e}")
+        except Exception as e:
+            self.db_manager.registrar_error(f"Error en catalogos: {e}", "Navegación", self.current_login)
 
     def mostrar_pagina_asistencia(self):
         try:
             self.ui.stackedWidget.setCurrentWidget(self.ui.Asistencia)
+            try:
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+            except:
+                ip_address = "127.0.0.1"
             self.db_manager.registrar_acceso(
-                self.current_login, True, "Auditoria APP: Acceso al modulo de Asistencia"
+                self.current_login, True, "Auditoria APP: Acceso al modulo de Asistencia", ip_address
             )
             # --- AÑADIDO: Configurar estado inicial ---
             self.accion_asistencia_consultar()
@@ -292,12 +342,22 @@ class ControlWindows(QDialog):
             # --- FIN DE AÑADIDO ---
         except AttributeError as e:
             print(f"Error: La pagina (asistencias) no existe. creela en Qt Designer. {e}")
+        except Exception as e:
+            print(e)
+            # LOG DE SISTEMA GENÉRICO
+            self.db_manager.registrar_error(f"Error general en asistencia: {e}", "Navegación", self.current_login)
 
     def mostrar_pagina_evaluaciones(self):
         try:
             self.ui.stackedWidget.setCurrentWidget(self.ui.Evaluaciones)
+            try:
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+            except:
+                ip_address = "127.0.0.1"
+
             self.db_manager.registrar_acceso(
-                self.current_login, True, "Auditoria APP: Acceso al modulo de Evaluaciones"
+                self.current_login, True, "Auditoria APP: Acceso al modulo de Evaluaciones", ip_address
             )
             # --- AÑADIDO: Configurar estado inicial ---
             self.accion_evaluaciones_consultar()
@@ -306,6 +366,10 @@ class ControlWindows(QDialog):
             # --- FIN DE AÑADIDO ---
         except AttributeError as e:
             print(f"Erro: La pagina (evaluaciones) no existe. creela en Qt Designer. {e}")
+        except Exception as e:
+            print(e)
+            # LOG DE SISTEMA GENÉRICO
+            self.db_manager.registrar_error(f"Error general en evaluaciones: {e}", "Navegación", self.current_login)
 
     # --- MÓDULO: ANIMACIONES DE MENÚS ---
 
@@ -485,22 +549,34 @@ class ControlWindows(QDialog):
         # 1. Validar que la contraseña anterior sea correcta
         if not password_actual_guardado == password_anterior:
             QMessageBox.warning(self, "Acción denegada", "La contraseña anterior no es igual a la ingresada.")
-            return
+            self.db_manager.registrar_error(f"Error al cambiar password: La contraseña anterior no es igual a la ingresada: ", "Login", self.current_login, "192.168.0.225")
+            self.limpiar_campos_password()
+
 
             # 2. Validar que los campos no estén vacíos
         if not password_nuevo or not password_repetir:
             QMessageBox.warning(self, "Error", "El campo 'Password Nuevo' y 'Repetir' no pueden estar vacíos.")
-            return
+            self.db_manager.registrar_error(
+                f"Error al cambiar password: El campo 'Password Nuevo' y 'Repetir' no pueden estar vacíos. ", "Login", self.current_login,
+                self.current_login)
+            self.limpiar_campos_password()
+
 
         # 3. Validar que las nuevas contraseñas coincidan
         if password_nuevo != password_repetir:
             QMessageBox.warning(self, "Error", "Las nuevas contraseñas no coinciden.")
-            return
+            self.db_manager.registrar_error(
+                f"Error al cambiar password: Las nuevas contraseñas no coinciden. ", "Login", self.current_login)
+            self.limpiar_campos_password()
+
 
         # 4. Validar que la nueva no sea igual a la anterior
         if password_nuevo == password_actual_guardado:
             QMessageBox.warning(self, "Error", "La nueva contraseña no puede ser igual a la anterior.")
-            return
+            self.db_manager.registrar_error(
+                f"Error al cambiar password:La nueva contraseña no puede ser igual a la anterior. ", "Login", self.current_login)
+            self.limpiar_campos_password()
+
 
         # 5. Validar criterios del PDF (usamos la misma función de validación en vivo)
         if not (4 <= len(password_nuevo) <= 10) or \
@@ -508,15 +584,19 @@ class ControlWindows(QDialog):
                 not re.search(r"[a-z]", password_nuevo) or \
                 not re.search(r"[0-9]", password_nuevo) or \
                 not re.search(r"[^a-zA-Z0-9]", password_nuevo):  # <-- CAMBIO AQUÍ
-
+            self.limpiar_campos_password()
             # Mensaje de error actualizado
             QMessageBox.warning(self, "Error",
                                 "La contraseña nueva no cumple con todos los criterios (4-10 caracteres, 1 mayús, 1 min, 1 núm, 1 especial).")
+            self.db_manager.registrar_error(
+                f"Error al cambiar password:La contraseña nueva no cumple con todos los criterios (4-10 caracteres, 1 mayús, 1 min, 1 núm, 1 especial). ", "Login", self.current_login)
             return
+
 
         # 6. Validar que la nueva contraseña no exista en la BD
         if self.db_manager.verificar_password_existente(password_nuevo):
             QMessageBox.warning(self, "Error", "Esa contraseña ya está en uso por otro usuario. Elija una diferente.")
+            self.limpiar_campos_password()
             return
 
         # 7. Si todo es correcto, actualizar la BD
@@ -779,6 +859,8 @@ class ControlWindows(QDialog):
             except Exception as e:
                 print(f"Error al leer los datos de la tabla: {e}")
                 QMessageBox.critical(self, "Error", "No se pudieron cargar los datos de la fila seleccionada.")
+                # LOG DE SISTEMA
+                self.db_manager.registrar_error(f"Fallo al actualizar pago: {e}", "Personas", self.current_login)
 
     def accion_pagos_borrar(self):
         """
@@ -825,6 +907,8 @@ class ControlWindows(QDialog):
         except Exception as e:
             print(f"Error al borrar pago: {e}")
             QMessageBox.critical(self, "Error", "No se pudo obtener el ID del pago a borrar.")
+            # LOG DE SISTEMA
+            self.db_manager.registrar_error(f"Fallo al borrar pago: {e}", "Personas", self.current_login)
 
     def accion_pagos_consultar(self):
         """Vuelve a la vista de tabla (consulta), RECARTGA los datos
@@ -1050,8 +1134,14 @@ class ControlWindows(QDialog):
         """
         try:
             # 1. Registrar auditoría de aplicación
+            try:
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+            except:
+                ip_address = "127.0.0.1"
+
             self.db_manager.registrar_acceso(
-                self.current_login, True, "AUDITORIA APP: Acceso al módulo de Personas"
+                self.current_login, True, "AUDITORIA APP: Acceso al módulo de Personas", ip_address
             )
 
             # 2. Cambiar a la página de personas
@@ -1420,6 +1510,9 @@ class ControlWindows(QDialog):
         except Exception as e:
             print(f"Error al leer los datos de la tabla: {e}")
             QMessageBox.critical(self, "Error", "No se pudieron cargar los datos de la fila seleccionada.")
+            # LOG DE SISTEMA
+            self.db_manager.registrar_error(f"Fallo al cargar persona ID {cv_user_a_editar}: {e}", "Personas",
+                                            self.current_login)
 
     def guardar_actualizacion_persona(self):
         """Valida y guarda los datos de una persona MODIFICADA."""
@@ -1547,6 +1640,7 @@ class ControlWindows(QDialog):
             print(f"Error al borrar persona: {e}")
             QMessageBox.critical(self, "Error", "No se pudo obtener el ID de la persona a borrar.")
 
+
     # --- AÑADIDO: Funciones para los nuevos módulos ---
 
     def _configurar_botones_crud(self, estado, btn_nuevo, btn_actualizar, btn_borrar, btn_cancelar, btn_consultar):
@@ -1599,62 +1693,55 @@ class ControlWindows(QDialog):
     # =================================================================
 
     def accion_catalogos_nuevo(self):
-        # Si ya estamos en "nuevo", el botón es "Guardar".
+        # Obtenemos el nombre del catálogo seleccionado
+        catalogo_actual = self.ui.combo_catalogo_seleccion.currentText()
+
         if self.estado_actual_catalogos == "nuevo":
+            # --- AUDITORÍA DINÁMICA ---
+            mensaje = f"AUDITORIA BD: Insert en catalogo '{catalogo_actual}' (Simulado)"
+            self.db_manager.registrar_acceso(self.current_login, True, mensaje, self.obtener_ip())
+            # --------------------------
 
-            # --- LÍNEA AÑADIDA ---
-            self.db_manager.registrar_acceso(self.current_login, True,
-                                             "AUDITORIA BD: Se ha agregado un registro de un catalogo")
-            # --- FIN DE LÍNEA AÑADIDA ---
-
-            QMessageBox.information(self, "Simulación", "Acción 'Guardar Nuevo Catálogo' ejecutada (simulación).")
-            self.accion_catalogos_consultar()  # Volvemos al inicio
+            QMessageBox.information(self, "Simulación", f"Registro guardado en '{catalogo_actual}'.")
+            self.accion_catalogos_consultar()
         else:
             self.estado_actual_catalogos = "nuevo"
-            # self.ui.stackedWidget_2.setCurrentWidget(self.ui.page_2) # page_2 es el formulario
-            QMessageBox.information(self, "Simulación", "Mostrando formulario para 'Nuevo Catálogo' (simulación).")
-            self._configurar_botones_crud(
-                self.estado_actual_catalogos,
-                self.ui.btn_cata_nuevo, self.ui.btn_cata_actualizar, self.ui.btn_cata_borrar,
-                self.ui.btn_cata_cancelar, self.ui.btn_cata_consultar
-            )
+            QMessageBox.information(self, "Simulación", f"Formulario de Nuevo para '{catalogo_actual}'.")
+            self._configurar_botones_crud("nuevo", self.ui.btn_cata_nuevo, self.ui.btn_cata_actualizar,
+                                          self.ui.btn_cata_borrar, self.ui.btn_cata_cancelar,
+                                          self.ui.btn_cata_consultar)
 
     def accion_catalogos_actualizar(self):
-        # Si estamos "actualizando", el botón es "Guardar".
+        catalogo_actual = self.ui.combo_catalogo_seleccion.currentText()
+
         if self.estado_actual_catalogos == "actualizando":
+            # --- AUDITORÍA DINÁMICA ---
+            mensaje = f"AUDITORIA BD: Update en catalogo '{catalogo_actual}' (Simulado)"
+            self.db_manager.registrar_acceso(self.current_login, True, mensaje, self.obtener_ip())
+            # --------------------------
 
-            # --- LÍNEA AÑADIDA ---
-            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha actualizado un registro de un catalogo")
-            # --- FIN DE LÍNEA AÑADIDA ---
-
-            QMessageBox.information(self, "Simulación",
-                                    "Acción 'Guardar Actualización Catálogo' ejecutada (simulación).")
-            self.accion_catalogos_consultar()  # Volvemos al inicio
+            QMessageBox.information(self, "Simulación", f"Registro actualizado en '{catalogo_actual}'.")
+            self.accion_catalogos_consultar()
         else:
             self.estado_actual_catalogos = "actualizando"
-            # self.ui.stackedWidget_2.setCurrentWidget(self.ui.page_2)
-            QMessageBox.information(self, "Simulación", "Cargando datos para 'Actualizar Catálogo' (simulación).")
-            self._configurar_botones_crud(
-                self.estado_actual_catalogos,
-                self.ui.btn_cata_nuevo, self.ui.btn_cata_actualizar, self.ui.btn_cata_borrar,
-                self.ui.btn_cata_cancelar, self.ui.btn_cata_consultar
-            )
+            QMessageBox.information(self, "Simulación", f"Cargando datos de '{catalogo_actual}' para editar.")
+            self._configurar_botones_crud("actualizando", self.ui.btn_cata_nuevo, self.ui.btn_cata_actualizar,
+                                          self.ui.btn_cata_borrar, self.ui.btn_cata_cancelar,
+                                          self.ui.btn_cata_consultar)
 
     def accion_catalogos_borrar(self):
-        # Para cumplir la regla, deshabilitamos otros botones
+        catalogo_actual = self.ui.combo_catalogo_seleccion.currentText()
+
         self.estado_actual_catalogos = "borrando"
-        self._configurar_botones_crud(
-            self.estado_actual_catalogos,
-            self.ui.btn_cata_nuevo, self.ui.btn_cata_actualizar, self.ui.btn_cata_borrar,
-            self.ui.btn_cata_cancelar, self.ui.btn_cata_consultar
-        )
+        self._configurar_botones_crud("borrando", self.ui.btn_cata_nuevo, self.ui.btn_cata_actualizar,
+                                      self.ui.btn_cata_borrar, self.ui.btn_cata_cancelar, self.ui.btn_cata_consultar)
 
-        # --- LÍNEA AÑADIDA ---
-        self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha eliminado un registro de un catalogo")
-        # --- FIN DE LÍNEA AÑADIDA ---
+        # --- AUDITORÍA DINÁMICA ---
+        mensaje = f"AUDITORIA BD: Delete en catalogo '{catalogo_actual}' (Simulado)"
+        self.db_manager.registrar_acceso(self.current_login, True, mensaje, self.obtener_ip())
+        # --------------------------
 
-        QMessageBox.information(self, "Simulación",
-                                "Acción 'Borrar Catálogo' ejecutada (simulación). \nPresione Cancelar o Consultar para resetear.")
+        QMessageBox.information(self, "Simulación", f"Registro borrado de '{catalogo_actual}'.")
 
     def accion_catalogos_consultar(self):
         self.estado_actual_catalogos = "consultando"
@@ -1672,9 +1759,13 @@ class ControlWindows(QDialog):
 
     def accion_asistencia_nuevo(self):
         if self.estado_actual_asistencia == "nuevo":
-
+            try:
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+            except:
+                ip_address = "127.0.0.1"
             # --- LÍNEA AÑADIDA ---
-            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha agregado una asistencia")
+            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha agregado una asistencia", ip_address)
             # --- FIN DE LÍNEA AÑADIDA ---
 
             QMessageBox.information(self, "Simulación", "Acción 'Guardar Nueva Asistencia' ejecutada (simulación).")
@@ -1691,9 +1782,13 @@ class ControlWindows(QDialog):
 
     def accion_asistencia_actualizar(self):
         if self.estado_actual_asistencia == "actualizando":
-
+            try:
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+            except:
+                ip_address = "127.0.0.1"
             # --- LÍNEA AÑADIDA ---
-            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha actualizado una asistencia")
+            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha actualizado una asistencia", ip_address)
             # --- FIN DE LÍNEA AÑADIDA ---
 
             QMessageBox.information(self, "Simulación",
@@ -1716,9 +1811,13 @@ class ControlWindows(QDialog):
             self.ui.btn_asis_nuevo, self.ui.btn_asis_actualizar, self.ui.btn_asis_borrar,
             self.ui.btn_asis_cancelar, self.ui.btn_asis_consultar
         )
-
+        try:
+            hostname = socket.gethostname()
+            ip_address = socket.gethostbyname(hostname)
+        except:
+            ip_address = "127.0.0.1"
         # --- LÍNEA AÑADIDA ---
-        self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha eliminado una asistencia")
+        self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha eliminado una asistencia", ip_address)
         # --- FIN DE LÍNEA AÑADIDA ---
 
         QMessageBox.information(self, "Simulación",
@@ -1739,9 +1838,13 @@ class ControlWindows(QDialog):
 
     def accion_evaluaciones_nuevo(self):
         if self.estado_actual_evaluaciones == "nuevo":
-
+            try:
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+            except:
+                ip_address = "127.0.0.1"
             # --- LÍNEA AÑADIDA ---
-            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha agregado una evaluacion")
+            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha agregado una evaluacion", ip_address)
             # --- FIN DE LÍNEA AÑADIDA ---
 
             QMessageBox.information(self, "Simulación", "Acción 'Guardar Nueva Evaluación' ejecutada (simulación).")
@@ -1758,9 +1861,13 @@ class ControlWindows(QDialog):
 
     def accion_evaluaciones_actualizar(self):
         if self.estado_actual_evaluaciones == "actualizando":
-
+            try:
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+            except:
+                ip_address = "127.0.0.1"
             # --- LÍNEA AÑADIDA ---
-            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha actualizado una evaluacion")
+            self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se ha actualizado una evaluacion", ip_address)
             # --- FIN DE LÍNEA AÑADIDA ---
 
             QMessageBox.information(self, "Simulación",
@@ -1783,9 +1890,13 @@ class ControlWindows(QDialog):
             self.ui.btn_eva_nuevo, self.ui.btn_eva_actualizar, self.ui.btn_eva_borrar,
             self.ui.btn_eva_cancelar, self.ui.btn_eva_consultar
         )
-
+        try:
+            hostname = socket.gethostname()
+            ip_address = socket.gethostbyname(hostname)
+        except:
+            ip_address = "127.0.0.1"
         # --- LÍNEA AÑADIDA ---
-        self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se a eliminado una evaluacion")
+        self.db_manager.registrar_acceso(self.current_login, True, "AUDITORIA BD: Se a eliminado una evaluacion", ip_address)
         # --- FIN DE LÍNEA AÑADIDA ---
 
         QMessageBox.information(self, "Simulación",
@@ -1800,4 +1911,69 @@ class ControlWindows(QDialog):
             self.ui.btn_eva_cancelar, self.ui.btn_eva_consultar
         )
 
-    # --- FIN DE AÑADIDO ---
+    def cargar_lista_de_catalogos(self):
+        """
+        Configura el mapeo entre los nombres amigables y las tablas reales de la BD.
+        Llena el ComboBox con estas opciones.
+        """
+        # Diccionario de configuración: "Nombre en Combo": ("TablaBD", "PK", "Descripcion")
+        # Basado en tu archivo bdPracticaC4_1.sql
+        self.catalogo_config = {
+            "Nombre de Personas": ("cNombre", "CvNombre", "DsNombre"),
+            "Apellidos de Personas": ("cApellid", "CvApellid", "DsApellid"),
+            "Géneros": ("cGenero", "CvGenero", "DsGenero"),
+            "Puestos": ("cPuesto", "CvPuesto", "DsPuesto"),
+            "Tipos de Persona": ("cTpPerso", "CvTpPerson", "DsTpPerson"),
+            "Aficiones": ("cAficion", "CvAficion", "DsAficion"),
+            "Departamentos": ("cDepto", "CvDepto", "DsDepto"),
+            "Calles": ("cCalle", "CvCalle", "DsCalle"),
+            "Colonias": ("cColon", "CvColon", "DsColon"),
+            "Municipios": ("cMunicp", "CvMunicp", "DsMunicp"),
+            "Estados": ("cEstado", "CvEstado", "DsEstado"),
+            "Países": ("cPais", "CvPais", "DsPais"),
+            "Grados Académicos": ("CGdoAca", "CvGdoAca", "DsGdoAca"),
+            "Marcas": ("cMarca", "CvMarca", "DsMarca"),
+            "Presentaciones": ("cPresent", "CvPresent", "DsPresent")
+        }
+
+        self.ui.combo_catalogo_seleccion.clear()
+        self.ui.combo_catalogo_seleccion.addItems(sorted(self.catalogo_config.keys()))
+
+    def cargar_tabla_catalogos(self):
+        """
+        Obtiene la configuración del catálogo seleccionado y llena la tabla
+        con datos reales de la base de datos.
+        """
+        seleccion = self.ui.combo_catalogo_seleccion.currentText()
+        if not seleccion or seleccion not in self.catalogo_config:
+            return
+
+        # Obtener los nombres técnicos de la BD desde nuestro diccionario
+        tabla, col_id, col_desc = self.catalogo_config[seleccion]
+
+        # Llamar a la BD
+        datos = self.db_manager.get_catalogo_dinamico(tabla, col_id, col_desc)
+
+        # Configurar la tabla
+        self.ui.tabla_catalogos.setColumnCount(2)
+        self.ui.tabla_catalogos.setHorizontalHeaderLabels(["ID", "Descripción"])
+        self.ui.tabla_catalogos.setRowCount(len(datos))
+
+        # Llenar la tabla
+        for row_idx, (id_val, desc_val) in enumerate(datos):
+            self.ui.tabla_catalogos.setItem(row_idx, 0, QTableWidgetItem(str(id_val)))
+            self.ui.tabla_catalogos.setItem(row_idx, 1, QTableWidgetItem(str(desc_val)))
+
+        # Ajustes visuales
+        self.ui.tabla_catalogos.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.ui.tabla_catalogos.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.ui.tabla_catalogos.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.ui.tabla_catalogos.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+
+    def obtener_ip(self):
+        """Obtiene la IP local de la máquina para auditoría."""
+        try:
+            hostname = socket.gethostname()
+            return socket.gethostbyname(hostname)
+        except:
+            return "127.0.0.1"

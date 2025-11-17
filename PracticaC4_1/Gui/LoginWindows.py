@@ -2,11 +2,14 @@ from PyQt6.QtWidgets import QWidget, QMessageBox
 from PyQt6.QtCore import pyqtSignal
 from datetime import datetime
 from PyQt6.QtCore import Qt, QSize
+import socket
 from .ui_LoginWindows import Ui_Dialog
 
 
 class LoginWindow(QWidget):
+    # Señal actualizada para enviar también el ID del usuario (int)
     login_exitoso = pyqtSignal(str, str, str, str, str, int)
+
     def __init__(self, db_manager):
         super().__init__()
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
@@ -34,7 +37,7 @@ class LoginWindow(QWidget):
 
     def ocultar_password(self):
         self.ui.txt_password.setEchoMode(self.ui.txt_password.EchoMode.Password)
-        
+
     def toggle_maximize(self):
         if self.isMaximized():
             self.showNormal()
@@ -73,9 +76,18 @@ class LoginWindow(QWidget):
         login = self.ui.txt_login.text()
         password = self.ui.txt_password.text()
 
+        # --- NUEVO: Obtener IP para auditoría ---
+        try:
+            hostname = socket.gethostname()
+            ip_address = socket.gethostbyname(hostname)
+        except:
+            ip_address = "127.0.0.1"
+        # ----------------------------------------
+
         if not login or not password:
             QMessageBox.warning(self, "Error", "Debe completar ambos campos.")
-            self.db_manager.registrar_acceso(login, False, "Intento fallido: Campos vacios")
+            # Enviamos la IP
+            self.db_manager.registrar_acceso(login, False, "Intento fallido: Campos vacios", ip_address)
             return
 
         db_data = self.db_manager.validar_usuario(login, password)
@@ -83,12 +95,14 @@ class LoginWindow(QWidget):
         if db_data is None:
             QMessageBox.critical(self, "Error de Sistema",
                                  "Fallo al obtener respuesta de la base de datos. Verifique la conexión o el SQL.")
-            self.db_manager.registrar_acceso(login, False, "Error de conexion/SQL en validacion")
+            # Enviamos la IP
+            self.db_manager.registrar_acceso(login, False, "Error de conexion/SQL en validacion", ip_address)
             return
 
         if db_data == -1:
             QMessageBox.critical(self, "Acceso denegado", "Credenciales inválidas (Usuario o Contraseña incorrectos).")
-            self.db_manager.registrar_acceso(login, False,"Intento fallido Credenciales invalidas")
+            # Enviamos la IP
+            self.db_manager.registrar_acceso(login, False, "Intento fallido Credenciales invalidas", ip_address)
             self.ui.txt_login.clear()
             self.ui.txt_password.clear()
             return
@@ -104,12 +118,16 @@ class LoginWindow(QWidget):
         except (ValueError, TypeError) as e:
             QMessageBox.critical(self, "Error de Datos",
                                  f"El formato de datos devuelto por la base de datos es incorrecto. Error: {e}")
-            self.db_manager.registrar_acceso(login, False, f"Error de formato de datos {e}")
+            # Enviamos la IP
+            self.db_manager.registrar_acceso(login, False, f"Error de formato de datos {e}", ip_address)
+            self.db_manager.registrar_error(f"Error procesando login: {e}", "Login", login, )
             return
 
         if fecha_actual > fecven and edocta_str.lower() == 'false':
-            QMessageBox.warning(self,"Acceso denegado","Cuenta caducada")
-            self.db_manager.registrar_acceso(login, False, "Intento fallido: Cuenta caducada y deshabilitada")
+            QMessageBox.warning(self, "Acceso denegado", "Cuenta caducada")
+            # Enviamos la IP
+            self.db_manager.registrar_acceso(login, False, "Intento fallido: Cuenta caducada y deshabilitada",
+                                             ip_address)
             self.ui.txt_login.clear()
             self.ui.txt_password.clear()
             return
@@ -117,7 +135,8 @@ class LoginWindow(QWidget):
         if edocta_str.lower() == 'false':
             QMessageBox.warning(self, "Acceso denegado",
                                 "Cuenta desabilitada")
-            self.db_manager.registrar_acceso(login, False, "Intento fallido: Cuenta deshabilitada('False')")
+            # Enviamos la IP
+            self.db_manager.registrar_acceso(login, False, "Intento fallido: Cuenta deshabilitada('False')", ip_address)
             self.ui.txt_login.clear()
             self.ui.txt_password.clear()
             return
@@ -126,7 +145,8 @@ class LoginWindow(QWidget):
             exito_update = self.db_manager.actualizar_estado_cuenta(cv_user, 'False')
             Detalle = "Intento fallido: Cuenta vencida(Actualizada a ('False')" if exito_update else "Intento fallido: Cuenta vencida (Error al actualizar)"
             QMessageBox.critical(self, "Acceso denegado", "Cuenta vencida")
-            self.db_manager.registrar_acceso(login, False, Detalle)
+            # Enviamos la IP
+            self.db_manager.registrar_acceso(login, False, Detalle, ip_address)
             self.ui.txt_login.clear()
             self.ui.txt_password.clear()
             return
@@ -134,15 +154,18 @@ class LoginWindow(QWidget):
         if fecha_actual < fecini:
             QMessageBox.warning(self, "Acceso denegado",
                                 "Cuenta por activarse.")
-            self.db_manager.registrar_acceso(login, False, "Intento Fallido: Cuenta por activarse")
+            # Enviamos la IP
+            self.db_manager.registrar_acceso(login, False, "Intento Fallido: Cuenta por activarse", ip_address)
             self.ui.txt_login.clear()
             self.ui.txt_password.clear()
             return
+
         nombre_completo = f"{nombre} {ape_pat} {ape_mat}"
-        puesto_str = puesto if puesto else "N/A" # Manejar si no tiene puesto
+        puesto_str = puesto if puesto else "N/A"  # Manejar si no tiene puesto
         genero_str = genero if genero else "N/A"
 
-        self.db_manager.registrar_acceso(login, True, "Login exitoso")
+        # Enviamos la IP en el login exitoso
+        self.db_manager.registrar_acceso(login, True, "Login exitoso", ip_address)
 
         self.login_exitoso.emit(nombre_completo, puesto_str, genero_str, login, password, cv_user)
         self.hide()

@@ -35,10 +35,10 @@
       <string notr="true">background-color: rgb(0, 0, 0);</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::Shape::StyledPanel</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
+      <enum>QFrame::Shadow::Raised</enum>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
@@ -55,7 +55,7 @@ color: rgb(20,200,220);</string>
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -75,7 +75,7 @@ color: rgb(20,200,220);</string>
         </property>
         <property name="icon">
          <iconset>
-          <normaloff>../../Imagenes/Minimizar.png</normaloff>../../Imagenes/Minimizar.png</iconset>
+          <normaloff>../e78f41d2/Minimizar.png</normaloff>../e78f41d2/Minimizar.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -95,7 +95,7 @@ color: rgb(20,200,220);</string>
         </property>
         <property name="icon">
          <iconset>
-          <normaloff>../../Imagenes/Maximizar.png</normaloff>../../Imagenes/Maximizar.png</iconset>
+          <normaloff>../fde0fb4c/Maximizar.png</normaloff>../fde0fb4c/Maximizar.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -115,7 +115,7 @@ color: rgb(20,200,220);</string>
         </property>
         <property name="icon">
          <iconset>
-          <normaloff>../../Imagenes/Cerrar.png</normaloff>../../Imagenes/Cerrar.png</iconset>
+          <normaloff>../601146d4/Cerrar.png</normaloff>../601146d4/Cerrar.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -134,10 +134,10 @@ color: rgb(20,200,220);</string>
       <string notr="true">background-color: rgb(0,85,127)</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::Shape::StyledPanel</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
+      <enum>QFrame::Shadow::Raised</enum>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="3,8">
       <property name="spacing">
@@ -158,10 +158,10 @@ color: rgb(20,200,220);</string>
       <item>
        <widget class="QFrame" name="frame_3">
         <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+         <enum>QFrame::Shape::StyledPanel</enum>
         </property>
         <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
+         <enum>QFrame::Shadow::Raised</enum>
         </property>
         <widget class="QLabel" name="label_2">
          <property name="geometry">
@@ -198,7 +198,7 @@ color: rgb(20,200,220);</string>
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>../../Imagenes/logo.png</pixmap>
+          <pixmap>../7fa464eb/logo.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -209,10 +209,10 @@ color: rgb(20,200,220);</string>
       <item>
        <widget class="QFrame" name="frame_4">
         <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+         <enum>QFrame::Shape::StyledPanel</enum>
         </property>
         <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
+         <enum>QFrame::Shadow::Raised</enum>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2" stretch="8,5">
          <property name="spacing">
@@ -233,19 +233,19 @@ color: rgb(20,200,220);</string>
          <item>
           <widget class="QFrame" name="frame_5">
            <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
+            <enum>QFrame::Shape::StyledPanel</enum>
            </property>
            <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
+            <enum>QFrame::Shadow::Raised</enum>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
              <widget class="QFrame" name="frame_7">
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::Shape::StyledPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Shadow::Raised</enum>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_3">
                <item>
@@ -274,10 +274,10 @@ background-color: rgb(255, 255, 255);</string>
             <item>
              <widget class="QFrame" name="frame_8">
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::Shape::StyledPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Shadow::Raised</enum>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
@@ -307,7 +307,7 @@ background-color: rgb(255, 255, 255);</string>
                  </property>
                  <property name="icon">
                   <iconset>
-                   <normaloff>../../Imagenes/eye_on_see_show_view_vision_watch_icon_123215.png</normaloff>../../Imagenes/eye_on_see_show_view_vision_watch_icon_123215.png</iconset>
+                   <normaloff>../91b1f4de/eye_on_see_show_view_vision_watch_icon_123215.png</normaloff>../91b1f4de/eye_on_see_show_view_vision_watch_icon_123215.png</iconset>
                  </property>
                  <property name="iconSize">
                   <size>
@@ -326,10 +326,10 @@ background-color: rgb(255, 255, 255);</string>
          <item>
           <widget class="QFrame" name="frame_6">
            <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
+            <enum>QFrame::Shape::StyledPanel</enum>
            </property>
            <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
+            <enum>QFrame::Shadow::Raised</enum>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_5">
             <item>
